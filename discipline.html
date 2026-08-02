@@ -2,180 +2,269 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 违纪统计</title>
-  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>违纪统计 - 班级助手</title>
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #FF8C69; --primary-light: #FFA88C;
-      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
-      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
-      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
-      --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
-      --radius: 16px; --radius-sm: 12px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
-    }
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px; display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .header-title { color: white; font-size: 18px; font-weight: 600; }
-    .add-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .content { padding: 16px; }
-    .stats-row {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
-    }
-    .stat-box {
-      background: var(--bg-card); border-radius: var(--radius); padding: 14px;
-      text-align: center; box-shadow: var(--shadow);
-    }
-    .stat-num { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
-    .stat-num.red { color: var(--error); }
-    .stat-num.orange { color: var(--warning); }
-    .stat-num.blue { color: var(--info); }
-    .stat-label { font-size: 11px; color: var(--text-muted); }
-    .discipline-card {
-      background: var(--bg-card); border-radius: var(--radius);
-      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
-    }
-    .disc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .disc-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--error) 0%, #EF5350 100%);
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 16px; font-weight: 600;
-    }
-    .disc-info { flex: 1; }
-    .disc-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-    .disc-time { font-size: 12px; color: var(--text-muted); }
-    .disc-type {
-      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
-      background: #FFEBEE; color: var(--error);
-    }
-    .desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
-    .disc-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-top: 10px; border-top: 1px solid var(--border);
-    }
-    .disc-action { font-size: 13px; color: var(--primary); cursor: pointer; font-weight: 500; }
-    .type-filter {
-      display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto;
-    }
-    .type-btn {
-      padding: 6px 14px; border: none; background: var(--bg-card);
-      border-radius: 16px; font-size: 12px; color: var(--text-secondary);
-      cursor: pointer; box-shadow: var(--shadow); white-space: nowrap;
-    }
-    .type-btn.active {
-      background: var(--error); color: white;
-    }
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-bar input, .filter-bar select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; }
+    .filter-bar input { flex: 1; min-width: 120px; }
+    .discipline-list { background: white; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .discipline-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+    .discipline-item:last-child { border-bottom: none; }
+    .discipline-info { flex: 1; }
+    .discipline-student { font-weight: 600; color: var(--text-primary); }
+    .discipline-meta { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .discipline-type { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px; }
+    .type-late { background: #FFF3CD; color: #856404; }
+    .type-early { background: #FFE0B2; color: #E65100; }
+    .type-class { background: #F8D7DA; color: #721C24; }
+    .type-fight { background: #F5C6CB; color: #721C24; }
+    .type-homework { background: #FFF3CD; color: #856404; }
+    .type-other { background: #E2E3E5; color: #383D41; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+    .status-pending { background: #FFF3CD; color: #856404; }
+    .status-done { background: #D4EDDA; color: #155724; }
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .chart-box { background: white; border-radius: 12px; padding: 16px; height: 200px; display: flex; align-items: center; justify-content: center; }
+    .empty-chart { color: var(--text-secondary); text-align: center; }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <button class="back-btn" onclick="history.back()">
-        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-      </button>
-      <div class="header-title">违纪统计</div>
-    </div>
-    <button class="add-btn" onclick="addDiscipline()">
-      <i data-lucide="plus" class="w-5 h-5"></i>
-    </button>
-  </header>
-
-  <div class="content">
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="stat-num red">3</div>
-        <div class="stat-label">本周违纪</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num orange">8</div>
-        <div class="stat-label">本月违纪</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num blue">2</div>
-        <div class="stat-label">待处理</div>
-      </div>
-    </div>
-
-    <div class="type-filter">
-      <button class="type-btn active">全部</button>
-      <button class="type-btn">迟到</button>
-      <button class="type-btn">旷课</button>
-      <button class="type-btn">作业</button>
-      <button class="type-btn">纪律</button>
-    </div>
-
-    <div class="discipline-card">
-      <div class="disc-header">
-        <div class="disc-avatar">刘</div>
-        <div class="disc-info">
-          <div class="disc-name">刘洋</div>
-          <div class="disc-time">今天 08:15</div>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="app-title">违纪统计</h1>
         </div>
-        <span class="disc-type">迟到</span>
-      </div>
-      <div class="desc">早读课迟到 15 分钟，已批评教育</div>
-      <div class="disc-footer">
-        <span style="font-size: 12px; color: var(--text-muted);">已处理</span>
-        <span class="disc-action">详情 ›</span>
-      </div>
-    </div>
-
-    <div class="discipline-card">
-      <div class="disc-header">
-        <div class="disc-avatar" style="background: linear-gradient(135deg, var(--warning) 0%, #FFA726 100%);">陈</div>
-        <div class="disc-info">
-          <div class="disc-name">陈静</div>
-          <div class="disc-time">昨天 14:30</div>
+        <div class="header-right">
+          <button class="header-btn" onclick="addDiscipline()">+ 添加</button>
         </div>
-        <span class="disc-type" style="background: #FFF3E0; color: var(--warning);">纪律</span>
       </div>
-      <div class="desc">上课讲话，影响课堂秩序</div>
-      <div class="disc-footer">
-        <span style="font-size: 12px; color: var(--text-muted);">待处理</span>
-        <span class="disc-action">处理 ›</span>
-      </div>
-    </div>
+    </header>
 
-    <div class="discipline-card">
-      <div class="disc-header">
-        <div class="disc-avatar">杨</div>
-        <div class="disc-info">
-          <div class="disc-name">杨帆</div>
-          <div class="disc-time">2026-05-14</div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>班级助手</h2>
+        <p class="subtitle">绿茵校园·智慧班级</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">主功能</div>
+          <a href="index.html" class="nav-item"><span class="nav-icon">📊</span><span>主页信息</span></a>
+          <a href="students.html" class="nav-item"><span class="nav-icon">‍🎓</span><span>学生管理</span></a>
+          <a href="grades.html" class="nav-item"><span class="nav-icon">📈</span><span>成绩分析</span></a>
+          <a href="discipline.html" class="nav-item active"><span class="nav-icon">️</span><span>违纪统计</span></a>
+          <a href="homework.html" class="nav-item"><span class="nav-icon">📚</span><span>作业管理</span></a>
+          <a href="leave.html" class="nav-item"><span class="nav-icon">🗓️</span><span>请销假</span></a>
         </div>
-        <span class="disc-type" style="background: #FFF3E0; color: var(--warning);">作业</span>
+        <div class="nav-section">
+          <div class="nav-title">教学记录</div>
+          <a href="worklog.html" class="nav-item"><span class="nav-icon"></span><span>工作留痕</span></a>
+          <a href="talks.html" class="nav-item"><span class="nav-icon">💬</span><span>谈话记录</span></a>
+          <a href="seating.html" class="nav-item"><span class="nav-icon">🪑</span><span>排座位</span></a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">AI 助手</div>
+          <a href="ai-prepare.html" class="nav-item"><span class="nav-icon"></span><span>智能备课</span></a>
+          <a href="ai-analysis.html" class="nav-item"><span class="nav-icon"></span><span>学情分析</span></a>
+          <a href="ai-comment.html" class="nav-item"><span class="nav-icon">✍️</span><span>评语生成</span></a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="teacher-info">
+          <div class="teacher-avatar" id="teacherAvatar">李</div>
+          <div>
+            <div class="teacher-name" id="teacherName">李老师</div>
+            <div class="teacher-role" id="teacherRole">班主任</div>
+          </div>
+        </div>
       </div>
-      <div class="desc">连续 3 天未交数学作业</div>
-      <div class="disc-footer">
-        <span style="font-size: 12px; color: var(--text-muted);">已通知家长</span>
-        <span class="disc-action">详情 ›</span>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main class="main-content">
+      <div class="filter-bar">
+        <input type="date" id="filterStartDate" onchange="filterDiscipline()">
+        <input type="date" id="filterEndDate" onchange="filterDiscipline()">
+        <select id="filterStudent" onchange="filterDiscipline()">
+          <option value="">全部学生</option>
+        </select>
+        <select id="filterType" onchange="filterDiscipline()">
+          <option value="">全部类型</option>
+          <option value="迟到">迟到</option>
+          <option value="早退">早退</option>
+          <option value="课堂违纪">课堂违纪</option>
+          <option value="打架">打架</option>
+          <option value="未交作业">未交作业</option>
+          <option value="其他">其他</option>
+        </select>
       </div>
-    </div>
+
+      <div class="discipline-list" id="disciplineList">
+        <div class="empty-state">无违纪数据，保持良好</div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-box">
+          <div class="empty-chart">
+            <p>📊</p>
+            <p>按周统计</p>
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="empty-chart">
+            <p>🥧</p>
+            <p>按类型统计</p>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 
+  <script src="js/data.js"></script>
   <script>
-    lucide.createIcons();
-    function addDiscipline() { alert('添加违纪记录功能'); }
+    if (!classData.className || !classData.teacherName) {
+      window.location.href = 'setup.html';
+    }
+
+    function updatePage() {
+      document.getElementById('teacherName').textContent = (classData.teacherName || '老师') + '老师';
+      document.getElementById('teacherRole').textContent = classData.className || '班主任';
+      document.getElementById('teacherAvatar').textContent = (classData.teacherName || '老')[0];
+      
+      const studentSelect = document.getElementById('filterStudent');
+      studentSelect.innerHTML = '<option value="">全部学生</option>' + 
+        classData.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      
+      filterDiscipline();
+    }
+
+    function getTypeClass(type) {
+      const map = {
+        '迟到': 'type-late',
+        '早退': 'type-early',
+        '课堂违纪': 'type-class',
+        '打架': 'type-fight',
+        '未交作业': 'type-homework',
+        '其他': 'type-other'
+      };
+      return map[type] || 'type-other';
+    }
+
+    function filterDiscipline() {
+      const startDate = document.getElementById('filterStartDate').value;
+      const endDate = document.getElementById('filterEndDate').value;
+      const studentFilter = document.getElementById('filterStudent').value;
+      const typeFilter = document.getElementById('filterType').value;
+      
+      let filtered = classData.disciplines.filter(d => {
+        if (startDate && d.date < startDate) return false;
+        if (endDate && d.date > endDate) return false;
+        if (studentFilter && d.studentId !== studentFilter) return false;
+        if (typeFilter && d.type !== typeFilter) return false;
+        return true;
+      });
+      
+      renderDiscipline(filtered);
+    }
+
+    function renderDiscipline(disciplines) {
+      const list = document.getElementById('disciplineList');
+      
+      if (disciplines.length === 0) {
+        list.innerHTML = '<div class="empty-state">无违纪数据，保持良好</div>';
+        return;
+      }
+      
+      list.innerHTML = disciplines.map(d => {
+        const student = classData.students.find(s => s.id === d.studentId);
+        return `
+          <div class="discipline-item">
+            <div class="discipline-info">
+              <div class="discipline-student">
+                ${student ? student.name : '未知学生'}
+                <span class="discipline-type ${getTypeClass(d.type)}">${d.type}</span>
+              </div>
+              <div class="discipline-meta">${d.date} · ${d.description || '无描述'}</div>
+            </div>
+            <span class="status-badge ${d.handled ? 'status-done' : 'status-pending'}">
+              ${d.handled ? '已处理' : '未处理'}
+            </span>
+            <button class="action-btn" onclick="toggleHandled(${d.id})" style="margin-left: 8px;">
+              ${d.handled ? '撤销' : '处理'}
+            </button>
+            <button class="delete-btn" onclick="deleteDiscipline(${d.id})">删除</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addDiscipline() {
+      if (classData.students.length === 0) {
+        alert('请先添加学生');
+        return;
+      }
+      
+      const studentId = parseInt(prompt('选择学生 ID（1-' + classData.students.length + '）：'));
+      if (!studentId) return;
+      
+      const student = classData.students[studentId - 1];
+      if (!student) {
+        alert('学生不存在');
+        return;
+      }
+      
+      const type = prompt('违纪类型（迟到/早退/课堂违纪/打架/未交作业/其他）：', '迟到');
+      if (!type) return;
+      
+      const date = prompt('日期：', new Date().toISOString().split('T')[0]);
+      const description = prompt('描述（可选）：', '');
+      
+      classData.disciplines.push({
+        id: Date.now(),
+        studentId: student.id,
+        type,
+        date,
+        description,
+        handled: false
+      });
+      
+      saveData();
+      filterDiscipline();
+    }
+
+    function toggleHandled(id) {
+      const d = classData.disciplines.find(x => x.id === id);
+      if (d) {
+        d.handled = !d.handled;
+        saveData();
+        filterDiscipline();
+      }
+    }
+
+    function deleteDiscipline(id) {
+      if (confirm('确定删除这条违纪记录吗？')) {
+        classData.disciplines = classData.disciplines.filter(d => d.id !== id);
+        saveData();
+        filterDiscipline();
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    updatePage();
   </script>
 </body>
 </html>
