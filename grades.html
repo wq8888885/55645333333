@@ -2,195 +2,303 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 成绩分析</title>
-  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成绩分析 - 班级助手</title>
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #FF8C69; --primary-light: #FFA88C;
-      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
-      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
-      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
-      --info: #2196F3; --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
-      --radius: 16px; --radius-sm: 12px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
-    }
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px; display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .header-title { color: white; font-size: 18px; font-weight: 600; }
-    .content { padding: 16px; }
-    .exam-selector {
-      display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto;
-    }
-    .exam-btn {
-      padding: 8px 16px; border: none; background: var(--bg-card);
-      border-radius: 20px; font-size: 13px; color: var(--text-secondary);
-      cursor: pointer; box-shadow: var(--shadow); white-space: nowrap;
-    }
-    .exam-btn.active {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: white;
-    }
-    .overview-cards {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;
-    }
-    .overview-card {
-      background: var(--bg-card); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
-    }
-    .overview-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
-    .overview-value { font-size: 22px; font-weight: 700; }
-    .overview-value.high { color: var(--success); }
-    .overview-value.mid { color: var(--warning); }
-    .overview-value.low { color: var(--error); }
-    .overview-trend { font-size: 11px; margin-top: 4px; }
-    .trend-up { color: var(--success); }
-    .trend-down { color: var(--error); }
-    .chart-card {
-      background: var(--bg-card); border-radius: var(--radius); padding: 16px;
-      margin-bottom: 12px; box-shadow: var(--shadow);
-    }
-    .chart-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
-    .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
-    .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-    .bar {
-      width: 100%; border-radius: 6px 6px 0 0;
-      background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
-      transition: height 0.3s;
-    }
-    .bar-label { font-size: 10px; color: var(--text-muted); }
-    .bar-value { font-size: 11px; font-weight: 600; }
-    .student-rank-list { margin-top: 12px; }
-    .rank-item {
-      display: flex; align-items: center; gap: 12px; padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .rank-item:last-child { border-bottom: none; }
-    .rank-num {
-      width: 24px; height: 24px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: white;
-    }
-    .rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
-    .rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%); }
-    .rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); }
-    .rank-other { background: var(--text-muted); }
-    .rank-name { flex: 1; font-size: 14px; font-weight: 500; }
-    .rank-score { font-size: 14px; font-weight: 700; color: var(--primary); }
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-bar select { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; background: white; }
+    .grade-list { background: white; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+    .grade-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+    .grade-item:last-child { border-bottom: none; }
+    .grade-info { flex: 1; }
+    .grade-student { font-weight: 600; color: var(--text-primary); }
+    .grade-meta { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .grade-score { font-size: 24px; font-weight: bold; color: var(--primary-color); }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat-box { background: white; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-box .label { font-size: 12px; color: var(--text-secondary); }
+    .stat-box .value { font-size: 20px; font-weight: bold; color: var(--primary-color); margin-top: 4px; }
+    .chart-container { background: white; border-radius: 12px; padding: 16px; height: 300px; display: flex; align-items: center; justify-content: center; }
+    .empty-chart { color: var(--text-secondary); text-align: center; }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <button class="back-btn" onclick="history.back()">
-        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-      </button>
-      <div class="header-title">成绩分析</div>
-    </div>
-  </header>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="app-title">成绩分析</h1>
+        </div>
+        <div class="header-right">
+          <button class="header-btn" onclick="exportGrades()">📤 导出</button>
+          <button class="header-btn" onclick="addGrade()">+ 添加</button>
+        </div>
+      </div>
+    </header>
 
-  <div class="content">
-    <div class="exam-selector">
-      <button class="exam-btn active">本月月考</button>
-      <button class="exam-btn">期中考试</button>
-      <button class="exam-btn">上月月考</button>
-      <button class="exam-btn">单元测试</button>
-    </div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>班级助手</h2>
+        <p class="subtitle">绿茵校园·智慧班级</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">主功能</div>
+          <a href="index.html" class="nav-item"><span class="nav-icon">📊</span><span>主页信息</span></a>
+          <a href="students.html" class="nav-item"><span class="nav-icon">👨‍🎓</span><span>学生管理</span></a>
+          <a href="grades.html" class="nav-item active"><span class="nav-icon">📈</span><span>成绩分析</span></a>
+          <a href="discipline.html" class="nav-item"><span class="nav-icon">️</span><span>违纪统计</span></a>
+          <a href="homework.html" class="nav-item"><span class="nav-icon">📚</span><span>作业管理</span></a>
+          <a href="leave.html" class="nav-item"><span class="nav-icon">🗓️</span><span>请销假</span></a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">教学记录</div>
+          <a href="worklog.html" class="nav-item"><span class="nav-icon"></span><span>工作留痕</span></a>
+          <a href="talks.html" class="nav-item"><span class="nav-icon">💬</span><span>谈话记录</span></a>
+          <a href="seating.html" class="nav-item"><span class="nav-icon">🪑</span><span>排座位</span></a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">AI 助手</div>
+          <a href="ai-prepare.html" class="nav-item"><span class="nav-icon">🤖</span><span>智能备课</span></a>
+          <a href="ai-analysis.html" class="nav-item"><span class="nav-icon">📊</span><span>学情分析</span></a>
+          <a href="ai-comment.html" class="nav-item"><span class="nav-icon">✍️</span><span>评语生成</span></a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="teacher-info">
+          <div class="teacher-avatar" id="teacherAvatar">李</div>
+          <div>
+            <div class="teacher-name" id="teacherName">李老师</div>
+            <div class="teacher-role" id="teacherRole">班主任</div>
+          </div>
+        </div>
+      </div>
+    </aside>
 
-    <div class="overview-cards">
-      <div class="overview-card">
-        <div class="overview-label">平均分</div>
-        <div class="overview-value high">88.7</div>
-        <div class="overview-trend trend-up">↑ 2.3 分</div>
-      </div>
-      <div class="overview-card">
-        <div class="overview-label">最高分</div>
-        <div class="overview-value high">98</div>
-        <div class="overview-trend">张小明</div>
-      </div>
-      <div class="overview-card">
-        <div class="overview-label">及格率</div>
-        <div class="overview-value mid">92.8%</div>
-        <div class="overview-trend trend-up">↑ 1.5%</div>
-      </div>
-      <div class="overview-card">
-        <div class="overview-label">优秀率</div>
-        <div class="overview-value low">35.7%</div>
-        <div class="overview-trend trend-down">↓ 0.8%</div>
-      </div>
-    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <div class="chart-card">
-      <div class="chart-title">各科平均分</div>
-      <div class="bar-chart">
-        <div class="bar-item">
-          <div class="bar-value">92</div>
-          <div class="bar" style="height: 92px;"></div>
-          <div class="bar-label">语文</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-value">88</div>
-          <div class="bar" style="height: 88px;"></div>
-          <div class="bar-label">数学</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-value">85</div>
-          <div class="bar" style="height: 85px;"></div>
-          <div class="bar-label">英语</div>
-        </div>
-        <div class="bar-item">
-          <div class="bar-value">90</div>
-          <div class="bar" style="height: 90px;"></div>
-          <div class="bar-label">科学</div>
-        </div>
+    <main class="main-content">
+      <div class="filter-bar">
+        <select id="filterExam" onchange="filterGrades()">
+          <option value="">全部考试</option>
+        </select>
+        <select id="filterSubject" onchange="filterGrades()">
+          <option value="">全部科目</option>
+          <option value="语文">语文</option>
+          <option value="数学">数学</option>
+          <option value="英语">英语</option>
+          <option value="物理">物理</option>
+          <option value="化学">化学</option>
+          <option value="生物">生物</option>
+        </select>
+        <select id="filterStudent" onchange="filterGrades()">
+          <option value="">全部学生</option>
+        </select>
       </div>
-    </div>
 
-    <div class="chart-card">
-      <div class="chart-title">成绩排名 TOP 5</div>
-      <div class="student-rank-list">
-        <div class="rank-item">
-          <div class="rank-num rank-1">1</div>
-          <div class="rank-name">张小明</div>
-          <div class="rank-score">98 分</div>
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="label">平均分</div>
+          <div class="value" id="avgScore">-</div>
         </div>
-        <div class="rank-item">
-          <div class="rank-num rank-2">2</div>
-          <div class="rank-name">李华</div>
-          <div class="rank-score">95 分</div>
+        <div class="stat-box">
+          <div class="label">最高分</div>
+          <div class="value" id="maxScore">-</div>
         </div>
-        <div class="rank-item">
-          <div class="rank-num rank-3">3</div>
-          <div class="rank-name">赵强</div>
-          <div class="rank-score">93 分</div>
+        <div class="stat-box">
+          <div class="label">最低分</div>
+          <div class="value" id="minScore">-</div>
         </div>
-        <div class="rank-item">
-          <div class="rank-num rank-other">4</div>
-          <div class="rank-name">陈静</div>
-          <div class="rank-score">91 分</div>
-        </div>
-        <div class="rank-item">
-          <div class="rank-num rank-other">5</div>
-          <div class="rank-name">杨帆</div>
-          <div class="rank-score">90 分</div>
+        <div class="stat-box">
+          <div class="label">及格率</div>
+          <div class="value" id="passRate">-</div>
         </div>
       </div>
-    </div>
+
+      <div class="grade-list" id="gradeList">
+        <div class="empty-state">暂无成绩数据</div>
+      </div>
+
+      <div class="chart-container">
+        <div class="empty-chart">
+          <p>📊</p>
+          <p>暂无成绩数据</p>
+          <p style="font-size: 12px; margin-top: 8px;">添加成绩后自动显示图表</p>
+        </div>
+      </div>
+    </main>
   </div>
 
-  <script>lucide.createIcons();</script>
+  <script src="js/data.js"></script>
+  <script>
+    if (!classData.className || !classData.teacherName) {
+      window.location.href = 'setup.html';
+    }
+
+    function updatePage() {
+      document.getElementById('teacherName').textContent = (classData.teacherName || '老师') + '老师';
+      document.getElementById('teacherRole').textContent = classData.className || '班主任';
+      document.getElementById('teacherAvatar').textContent = (classData.teacherName || '老')[0];
+      
+      updateFilterOptions();
+      filterGrades();
+    }
+
+    function updateFilterOptions() {
+      const examSelect = document.getElementById('filterExam');
+      const studentSelect = document.getElementById('filterStudent');
+      
+      const exams = [...new Set(classData.grades.map(g => g.examName))];
+      examSelect.innerHTML = '<option value="">全部考试</option>' + 
+        exams.map(e => `<option value="${e}">${e}</option>`).join('');
+      
+      studentSelect.innerHTML = '<option value="">全部学生</option>' + 
+        classData.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    }
+
+    function filterGrades() {
+      const examFilter = document.getElementById('filterExam').value;
+      const subjectFilter = document.getElementById('filterSubject').value;
+      const studentFilter = document.getElementById('filterStudent').value;
+      
+      let filtered = classData.grades.filter(g => {
+        if (examFilter && g.examName !== examFilter) return false;
+        if (subjectFilter && g.subject !== subjectFilter) return false;
+        if (studentFilter && g.studentId !== studentFilter) return false;
+        return true;
+      });
+      
+      renderGrades(filtered);
+      updateStats(filtered);
+    }
+
+    function renderGrades(grades) {
+      const list = document.getElementById('gradeList');
+      
+      if (grades.length === 0) {
+        list.innerHTML = '<div class="empty-state">暂无成绩数据</div>';
+        return;
+      }
+      
+      list.innerHTML = grades.map(g => {
+        const student = classData.students.find(s => s.id === g.studentId);
+        return `
+          <div class="grade-item">
+            <div class="grade-info">
+              <div class="grade-student">${student ? student.name : '未知学生'}</div>
+              <div class="grade-meta">${g.examName} · ${g.subject} · ${g.date}</div>
+            </div>
+            <div class="grade-score">${g.score}</div>
+            <button class="delete-btn" onclick="deleteGrade(${g.id})">删除</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateStats(grades) {
+      if (grades.length === 0) {
+        document.getElementById('avgScore').textContent = '-';
+        document.getElementById('maxScore').textContent = '-';
+        document.getElementById('minScore').textContent = '-';
+        document.getElementById('passRate').textContent = '-';
+        return;
+      }
+      
+      const scores = grades.map(g => g.score);
+      const avg = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
+      const max = Math.max(...scores);
+      const min = Math.min(...scores);
+      const pass = scores.filter(s => s >= 60).length;
+      const passRate = ((pass / scores.length) * 100).toFixed(0) + '%';
+      
+      document.getElementById('avgScore').textContent = avg;
+      document.getElementById('maxScore').textContent = max;
+      document.getElementById('minScore').textContent = min;
+      document.getElementById('passRate').textContent = passRate;
+    }
+
+    function addGrade() {
+      if (classData.students.length === 0) {
+        alert('请先添加学生');
+        return;
+      }
+      
+      const studentId = prompt('选择学生 ID（1-' + classData.students.length + '）：');
+      if (!studentId) return;
+      
+      const student = classData.students[parseInt(studentId) - 1];
+      if (!student) {
+        alert('学生不存在');
+        return;
+      }
+      
+      const examName = prompt('考试名称：', '期中考试');
+      if (!examName) return;
+      
+      const subject = prompt('科目（语文/数学/英语/物理/化学/生物）：', '数学');
+      if (!subject) return;
+      
+      const score = parseFloat(prompt('分数（0-100）：'));
+      if (isNaN(score) || score < 0 || score > 100) {
+        alert('分数无效');
+        return;
+      }
+      
+      const date = prompt('考试日期：', new Date().toISOString().split('T')[0]);
+      
+      classData.grades.push({
+        id: Date.now(),
+        studentId: student.id,
+        examName,
+        subject,
+        score,
+        date
+      });
+      
+      saveData();
+      updateFilterOptions();
+      filterGrades();
+    }
+
+    function deleteGrade(id) {
+      if (confirm('确定删除这条成绩记录吗？')) {
+        classData.grades = classData.grades.filter(g => g.id !== id);
+        saveData();
+        filterGrades();
+      }
+    }
+
+    function exportGrades() {
+      const csv = [
+        ['学生', '考试', '科目', '分数', '日期'].join(','),
+        ...classData.grades.map(g => {
+          const student = classData.students.find(s => s.id === g.studentId);
+          return [student?.name || '未知', g.examName, g.subject, g.score, g.date].join(',');
+        })
+      ].join('\n');
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `grades-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    updatePage();
+  </script>
 </body>
 </html>
