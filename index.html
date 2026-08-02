@@ -3,565 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 绿茵校园·智慧班级</title>
-  <script>
-    if (!localStorage.getItem('isSetup')) window.location.href = 'setup.html';
-  </script>
-  <script src="js/data.js"></script>
-  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-    }
-
-    :root {
-      --primary: #FF8C69;
-      --primary-light: #FFB399;
-      --primary-dark: #E67350;
-      --bg-primary: #FFF8F0;
-      --bg-card: #FFFFFF;
-      --text-primary: #333333;
-      --text-secondary: #666666;
-      --text-muted: #999999;
-      --border: #FFE8D9;
-      --success: #5FB878;
-      --warning: #FFB347;
-      --danger: #FF6B6B;
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 16px;
-      --radius-xl: 20px;
-      --shadow-sm: 0 2px 8px rgba(255, 140, 105, 0.08);
-      --shadow-md: 0 4px 16px rgba(255, 140, 105, 0.12);
-      --shadow-lg: 0 8px 32px rgba(255, 140, 105, 0.16);
-    }
-
-    .app {
-      min-height: 100vh;
-      position: relative;
-    }
-
-    /* 头部 */
-    .app-header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: var(--shadow-md);
-    }
-
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .menu-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .menu-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .header-title {
-      color: white;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .header-subtitle {
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 12px;
-      margin-top: 2px;
-    }
-
-    .header-right {
-      display: flex;
-      gap: 8px;
-    }
-
-    .header-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .header-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    /* 侧边栏 */
-    .sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 200;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s;
-    }
-
-    .sidebar-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -320px;
-      width: 300px;
-      height: 100%;
-      background: var(--bg-card);
-      z-index: 201;
-      transition: left 0.3s ease;
-      overflow-y: auto;
-    }
-
-    .sidebar.active {
-      left: 0;
-    }
-
-    .sidebar-header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 24px 20px;
-      color: white;
-    }
-
-    .sidebar-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .sidebar-subtitle {
-      font-size: 12px;
-      opacity: 0.9;
-      margin-bottom: 16px;
-    }
-
-    .class-selector {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      backdrop-filter: blur(10px);
-    }
-
-    .class-name {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .class-stats {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-
-    .edit-btn {
-      width: 100%;
-      margin-top: 8px;
-      padding: 8px;
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
-      border-radius: var(--radius-sm);
-      color: white;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .sidebar-nav {
-      padding: 16px 0;
-    }
-
-    .nav-section {
-      margin-bottom: 16px;
-    }
-
-    .nav-title {
-      padding: 8px 20px;
-      font-size: 12px;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 20px;
-      color: var(--text-primary);
-      text-decoration: none;
-      transition: all 0.3s;
-    }
-
-    .nav-item:hover {
-      background: var(--bg-primary);
-    }
-
-    .nav-item.active {
-      background: linear-gradient(90deg, rgba(255, 140, 105, 0.1) 0%, transparent 100%);
-      color: var(--primary);
-      border-left: 3px solid var(--primary);
-    }
-
-    .nav-icon {
-      font-size: 18px;
-    }
-
-    .sidebar-footer {
-      padding: 20px;
-      border-top: 1px solid var(--border);
-    }
-
-    .teacher-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .teacher-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-    }
-
-    .teacher-name {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .teacher-role {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .footer-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .action-btn {
-      width: 100%;
-      padding: 10px;
-      background: var(--bg-primary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text-primary);
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .action-btn:hover {
-      background: var(--border);
-    }
-
-    .logout-btn {
-      color: var(--danger);
-    }
-
-    /* 主内容区 */
-    .main-content {
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .greeting-card {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      color: white;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .greeting-text h2 {
-      font-size: 22px;
-      margin-bottom: 8px;
-    }
-
-    .greeting-text p {
-      font-size: 14px;
-      opacity: 0.9;
-    }
-
-    .weather-widget {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 16px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: var(--radius-md);
-      backdrop-filter: blur(10px);
-    }
-
-    .weather-icon {
-      font-size: 32px;
-    }
-
-    .temperature {
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    .weather-desc {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .stat-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .stat-icon {
-      font-size: 20px;
-    }
-
-    .stat-title {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 4px;
-    }
-
-    .stat-desc {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .stat-link {
-      font-size: 12px;
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .stat-link:hover {
-      text-decoration: underline;
-    }
-
-    .todo-section {
-      background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .section-header h3 {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .add-btn {
-      padding: 6px 12px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      cursor: pointer;
-    }
-
-    .todo-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .todo-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px;
-      background: var(--bg-primary);
-      border-radius: var(--radius-md);
-      border-left: 3px solid var(--primary);
-    }
-
-    .todo-content {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-    }
-
-    .todo-tag {
-      padding: 4px 8px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .todo-tag.reminder {
-      background: var(--warning);
-      color: white;
-    }
-
-    .todo-tag.regular {
-      background: var(--success);
-      color: white;
-    }
-
-    .todo-tag.communication {
-      background: #4ECDC4;
-      color: white;
-    }
-
-    .todo-text {
-      flex: 1;
-    }
-
-    .todo-title {
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .todo-time {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .delete-btn {
-      padding: 6px 12px;
-      background: transparent;
-      color: var(--danger);
-      border: 1px solid var(--danger);
-      border-radius: var(--radius-sm);
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .delete-btn:hover {
-      background: var(--danger);
-      color: white;
-    }
-
-    @media (max-width: 380px) {
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  <title>班级助手</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <div class="app">
+    <!-- 顶部导航栏 -->
     <header class="app-header">
       <div class="header-content">
         <div class="header-left">
           <button class="menu-btn" onclick="toggleSidebar()">
-            <i data-lucide="menu"></i>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
           </button>
-          <div>
-            <h1 class="header-title">班级助手</h1>
-            <div class="header-subtitle">绿茵校园·智慧班级</div>
-          </div>
+          <h1 class="app-title">班级助手</h1>
         </div>
         <div class="header-right">
-          <button class="header-btn">
-            <i data-lucide="bell"></i>
-          </button>
-          <button class="header-btn">
-            <i data-lucide="user"></i>
-          </button>
+          <button class="header-btn" onclick="exportData()">⬇️</button>
+          <button class="header-btn" onclick="importData()">⬆️</button>
         </div>
       </div>
     </header>
 
+    <!-- 侧边栏 -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
-        <h2 class="sidebar-title">班级助手</h2>
-        <div class="sidebar-subtitle">绿茵校园·智慧班级</div>
-        <div class="class-selector">
-          <div class="class-name">三年级 (2) 班</div>
-          <div class="class-stats">42 名学生 · 班主任</div>
-          <button class="edit-btn">️ 点击编辑 / 切换</button>
+        <h2>班级助手</h2>
+        <p class="subtitle">绿茵校园·智慧班级</p>
+      </div>
+      
+      <div class="class-selector">
+        <div class="class-info">
+          <span class="class-name" id="sidebarClassName">三年级 (2) 班</span>
+          <span class="class-stats" id="sidebarClassStats">42 名学生 · 班主任</span>
         </div>
+        <button class="edit-btn" onclick="goToSetup()">✏️ 点击编辑 / 切换</button>
       </div>
 
       <nav class="sidebar-nav">
@@ -584,7 +63,7 @@
             <span>违纪统计</span>
           </a>
           <a href="homework.html" class="nav-item">
-            <span class="nav-icon"></span>
+            <span class="nav-icon">📚</span>
             <span>作业管理</span>
           </a>
           <a href="leave.html" class="nav-item">
@@ -596,7 +75,7 @@
         <div class="nav-section">
           <div class="nav-title">教学记录</div>
           <a href="worklog.html" class="nav-item">
-            <span class="nav-icon">📝</span>
+            <span class="nav-icon"></span>
             <span>工作留痕</span>
           </a>
           <a href="talks.html" class="nav-item">
@@ -628,27 +107,29 @@
 
       <div class="sidebar-footer">
         <div class="teacher-info">
-          <div class="teacher-avatar">李</div>
+          <div class="teacher-avatar" id="teacherAvatar">李</div>
           <div>
-            <div class="teacher-name">李老师</div>
-            <div class="teacher-role">三年级 (2) 班 · 班主任</div>
+            <div class="teacher-name" id="teacherName">李老师</div>
+            <div class="teacher-role" id="teacherRole">三年级 (2) 班 · 班主任</div>
           </div>
         </div>
         <div class="footer-actions">
           <button class="action-btn" onclick="exportData()">⬇️ 导出备份</button>
           <button class="action-btn" onclick="importData()">⬆️ 导入备份</button>
-          <button class="action-btn">🌓 切换模式</button>
-          <button class="action-btn logout-btn">🔙 返回登录</button>
+          <button class="action-btn" onclick="toggleTheme()">🌓 切换模式</button>
+          <button class="action-btn logout-btn" onclick="resetApp()"> 返回登录</button>
         </div>
       </div>
     </aside>
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
+    <!-- 主内容区 -->
     <main class="main-content">
+      <!-- 问候卡片 -->
       <div class="greeting-card">
         <div class="greeting-text">
-          <h2 id="greeting">晚上好，李老师 👋</h2>
+          <h2 id="greeting">晚上好，老师 👋</h2>
           <p>愿今日的每一份耕耘，都化作孩子成长的绿荫。</p>
         </div>
         <div class="weather-widget">
@@ -660,6 +141,7 @@
         </div>
       </div>
 
+      <!-- 统计卡片 -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-header">
@@ -702,135 +184,178 @@
         </div>
       </div>
 
+      <!-- 待办事项 -->
       <div class="todo-section">
         <div class="section-header">
-          <h3> 待办事项</h3>
+          <h3>📋 待办事项</h3>
           <button class="add-btn" onclick="addTodo()">+ 新增</button>
         </div>
-        <div class="todo-list" id="todo-list">
-          <!-- 待办事项将动态生成 -->
+        <div class="todo-list" id="todoList">
+          <!-- 待办事项会动态加载 -->
         </div>
       </div>
     </main>
   </div>
 
+  <script src="js/data.js"></script>
   <script>
-    // 初始化图标
-    lucide.createIcons();
-
-    // 侧边栏切换
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('active');
-      document.getElementById('sidebarOverlay').classList.toggle('active');
+    // 检查设置
+    if (!classData.className || !classData.teacherName) {
+      window.location.href = 'setup.html';
     }
 
-    // 更新问候语
-    function updateGreeting() {
+    // 更新页面显示
+    function updatePage() {
+      // 更新问候语
       const hour = new Date().getHours();
-      let greeting = '';
-      if (hour < 6) greeting = '凌晨好';
-      else if (hour < 9) greeting = '早上好';
-      else if (hour < 12) greeting = '上午好';
-      else if (hour < 14) greeting = '中午好';
-      else if (hour < 18) greeting = '下午好';
-      else greeting = '晚上好';
+      let greeting = '晚上好';
+      if (hour >= 5 && hour < 12) greeting = '上午好';
+      else if (hour >= 12 && hour < 14) greeting = '中午好';
+      else if (hour >= 14 && hour < 18) greeting = '下午好';
       
-      document.getElementById('greeting').textContent = `${greeting}，李老师 👋`;
+      document.getElementById('greeting').textContent = `${greeting}，${classData.teacherName || '老师'} `;
+      
+      // 更新侧边栏信息
+      document.getElementById('sidebarClassName').textContent = classData.className || '未设置班级';
+      document.getElementById('sidebarClassStats').textContent = `${classData.students.length} 名学生 · 班主任`;
+      document.getElementById('teacherName').textContent = (classData.teacherName || '老师') + '老师';
+      document.getElementById('teacherRole').textContent = `${classData.className || '未设置班级'} · 班主任`;
+      document.getElementById('teacherAvatar').textContent = (classData.teacherName || '老')[0];
+      
+      // 更新统计数据
+      updateStats();
+      
+      // 加载待办事项
+      loadTodos();
     }
 
     // 更新统计数据
     function updateStats() {
       const today = new Date().toISOString().split('T')[0];
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const weekStartStr = weekStart.toISOString().split('T')[0];
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      const monthStartStr = monthStart.toISOString().split('T')[0];
       
-      // 请假统计
-      const leaves = dataStore.getLeaves().filter(l => l.date === today);
-      document.getElementById('stat-leave').textContent = leaves.length;
-      document.getElementById('stat-leave-desc').textContent = leaves.length === 0 ? '今日无人请假' : `${leaves.length} 人请假`;
-
-      // 作业统计
-      const homework = dataStore.getHomework();
-      const unfinished = homework.reduce((sum, h) => sum + (h.total - h.submitted), 0);
-      document.getElementById('stat-homework').textContent = unfinished;
-      document.getElementById('stat-homework-desc').textContent = `共 ${homework.length} 份作业`;
-
-      // 违纪统计
-      const thisWeek = new Date();
-      thisWeek.setDate(thisWeek.getDate() - 7);
-      const disciplines = dataStore.getDisciplines().filter(d => new Date(d.date) >= thisWeek);
-      document.getElementById('stat-discipline').textContent = disciplines.length;
+      // 今日请假
+      const todayLeave = classData.leaves.filter(l => 
+        l.startDate <= today && l.endDate >= today && l.status === 'approved'
+      ).length;
+      document.getElementById('stat-leave').textContent = todayLeave;
+      document.getElementById('stat-leave-desc').textContent = todayLeave === 0 ? '今日无人请假' : `${todayLeave} 人请假`;
+      
+      // 作业未交
+      let homeworkPending = 0;
+      classData.homework.forEach(h => {
+        if (h.deadline >= today) {
+          classData.students.forEach(s => {
+            const submitted = h.submissions.some(sub => sub.studentId === s.id);
+            if (!submitted) homeworkPending++;
+          });
+        }
+      });
+      document.getElementById('stat-homework').textContent = homeworkPending;
+      document.getElementById('stat-homework-desc').textContent = `共 ${classData.homework.length} 份作业`;
+      
+      // 本周违纪
+      const weekDiscipline = classData.disciplines.filter(d => 
+        d.date >= weekStartStr && !d.handled
+      ).length;
+      document.getElementById('stat-discipline').textContent = weekDiscipline;
       document.getElementById('stat-discipline-desc').textContent = '本周违纪记录';
-
-      // 工作留痕统计
-      const thisMonth = new Date();
-      thisMonth.setMonth(thisMonth.getMonth() - 1);
-      const worklogs = dataStore.getWorklogs().filter(w => new Date(w.date) >= thisMonth);
-      document.getElementById('stat-worklog').textContent = worklogs.length;
+      
+      // 本月工作留痕
+      const monthWorklog = classData.worklogs.filter(w => 
+        w.date >= monthStartStr
+      ).length;
+      document.getElementById('stat-worklog').textContent = monthWorklog;
       document.getElementById('stat-worklog-desc').textContent = '条记录';
     }
 
-    // 渲染待办事项
-    function renderTodos() {
-      const todos = dataStore.getTodos();
-      const todoList = document.getElementById('todo-list');
+    // 加载待办事项
+    function loadTodos() {
+      const todoList = document.getElementById('todoList');
+      todoList.innerHTML = '';
       
-      if (todos.length === 0) {
-        todoList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">暂无待办事项</div>';
+      if (classData.todos.length === 0) {
+        todoList.innerHTML = '<div class="empty-state">暂无待办事项</div>';
         return;
       }
-
-      todoList.innerHTML = todos.map((todo, index) => `
-        <div class="todo-item">
+      
+      classData.todos.forEach((todo, index) => {
+        const item = document.createElement('div');
+        item.className = 'todo-item';
+        item.innerHTML = `
           <div class="todo-content">
             <span class="todo-tag ${todo.type}">${todo.typeName}</span>
             <div class="todo-text">
-              <div class="todo-title">${todo.title}</div>
+              <div class="todo-title ${todo.completed ? 'completed' : ''}">${todo.text}</div>
               <div class="todo-time">${todo.time}</div>
             </div>
           </div>
-          <button class="delete-btn" onclick="deleteTodo(${index})">删除</button>
-        </div>
-      `).join('');
+          <div class="todo-actions">
+            <button class="complete-btn" onclick="toggleTodo(${index})">${todo.completed ? '撤销' : '完成'}</button>
+            <button class="delete-btn" onclick="deleteTodo(${index})">删除</button>
+          </div>
+        `;
+        todoList.appendChild(item);
+      });
     }
 
     // 添加待办
     function addTodo() {
-      const title = prompt('请输入待办事项：');
-      if (!title) return;
+      const text = prompt('请输入待办事项：');
+      if (!text) return;
       
       const type = prompt('类型（reminder/regular/communication）：', 'reminder');
       const typeName = type === 'reminder' ? '提醒' : type === 'regular' ? '常规' : '沟通';
       const time = prompt('时间：', '明天');
       
-      dataStore.addTodo({
-        title,
+      classData.todos.push({
+        text,
         type,
         typeName,
         time,
         completed: false
       });
       
-      renderTodos();
+      saveData();
+      loadTodos();
+    }
+
+    // 切换完成状态
+    function toggleTodo(index) {
+      classData.todos[index].completed = !classData.todos[index].completed;
+      saveData();
+      loadTodos();
     }
 
     // 删除待办
     function deleteTodo(index) {
       if (confirm('确定删除这个待办事项吗？')) {
-        dataStore.deleteTodo(index);
-        renderTodos();
+        classData.todos.splice(index, 1);
+        saveData();
+        loadTodos();
       }
+    }
+
+    // 切换侧边栏
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
     }
 
     // 导出数据
     function exportData() {
-      const data = dataStore.exportAll();
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `班级助手备份_${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      alert('导出成功！');
+      const dataStr = JSON.stringify(classData, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `class-assistant-backup-${new Date().toISOString().split('T')[0]}.json`;
+      link.click();
     }
 
     // 导入数据
@@ -846,9 +371,10 @@
         reader.onload = (e) => {
           try {
             const data = JSON.parse(e.target.result);
-            dataStore.importAll(data);
-            alert('导入成功！');
-            location.reload();
+            classData = data;
+            saveData();
+            updatePage();
+            alert('数据导入成功！');
           } catch (err) {
             alert('导入失败：文件格式错误');
           }
@@ -858,10 +384,26 @@
       input.click();
     }
 
-    // 页面加载时初始化
-    updateGreeting();
-    updateStats();
-    renderTodos();
+    // 切换主题
+    function toggleTheme() {
+      document.body.classList.toggle('dark-theme');
+      alert('主题切换功能开发中...');
+    }
+
+    // 重置应用
+    function resetApp() {
+      if (confirm('确定要返回登录页面吗？')) {
+        window.location.href = 'setup.html';
+      }
+    }
+
+    // 跳转到设置
+    function goToSetup() {
+      window.location.href = 'setup.html';
+    }
+
+    // 初始化
+    updatePage();
   </script>
 </body>
 </html>
