@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>班级助手 - 初始设置</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .setup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FF8C69 0%, #FFB347 100%);
+            padding: 20px;
+        }
+        .setup-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .setup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .setup-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .setup-header p {
+            color: #888;
+            font-size: 14px;
+        }
+        .setup-form {
+            margin-bottom: 20px;
+        }
+        .setup-form label {
+            display: block;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .setup-form input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .setup-form input:focus {
+            outline: none;
+            border-color: #FF8C69;
+        }
+        .setup-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FF8C69 0%, #FFB347 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .setup-btn:active {
+            transform: scale(0.98);
+        }
+        .setup-btn:hover {
+            box-shadow: 0 8px 20px rgba(255,140,105,0.4);
+        }
+        .error-msg {
+            color: #ff4444;
+            font-size: 13px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        .error-msg.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-card">
+            <div class="setup-header">
+                <h1>👋 欢迎使用</h1>
+                <p>班级助手 · 智慧班级管理</p>
+            </div>
+            <div class="setup-form">
+                <label for="className">班级名称</label>
+                <input type="text" id="className" placeholder="例如：三年级二班">
+            </div>
+            <div class="setup-form">
+                <label for="teacherName">班主任姓名</label>
+                <input type="text" id="teacherName" placeholder="例如：李老师">
+            </div>
+            <button class="setup-btn" onclick="saveSetup()">开始使用</button>
+            <div class="error-msg" id="errorMsg">请填写完整信息</div>
+        </div>
+    </div>
+
+    <script>
+        // 检查是否已设置
+        window.onload = function() {
+            const className = localStorage.getItem('className');
+            const teacherName = localStorage.getItem('teacherName');
+            if (className && teacherName) {
+                window.location.href = 'index.html';
+            }
+        };
+
+        function saveSetup() {
+            const className = document.getElementById('className').value.trim();
+            const teacherName = document.getElementById('teacherName').value.trim();
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (!className || !teacherName) {
+                errorMsg.classList.add('show');
+                setTimeout(() => errorMsg.classList.remove('show'), 3000);
+                return;
+            }
+
+            localStorage.setItem('className', className);
+            localStorage.setItem('teacherName', teacherName);
+            localStorage.setItem('isSetup', 'true');
+
+            window.location.href = 'index.html';
+        }
+
+        // 回车提交
+        document.getElementById('teacherName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') saveSetup();
+        });
+    </script>
+</body>
+</html>
