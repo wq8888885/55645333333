@@ -2,195 +2,238 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 请销假</title>
-  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>请销假 - 班级助手</title>
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #FF8C69; --primary-light: #FFA88C;
-      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
-      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
-      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
-      --info: #2196F3; --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
-      --radius: 16px; --radius-sm: 12px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
-    }
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px; display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .header-title { color: white; font-size: 18px; font-weight: 600; }
-    .add-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .content { padding: 16px; }
-    .leave-card {
-      background: var(--bg-card); border-radius: var(--radius);
-      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
-    }
-    .leave-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .leave-avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--info) 0%, #42A5F5 100%);
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 16px; font-weight: 600;
-    }
-    .leave-info { flex: 1; }
-    .leave-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-    .leave-type { font-size: 12px; color: var(--text-muted); }
-    .leave-status {
-      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
-    }
-    .status-pending { background: #FFF3E0; color: var(--warning); }
-    .status-approved { background: #E8F5E9; color: var(--success); }
-    .status-rejected { background: #FFEBEE; color: var(--error); }
-    .leave-details {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
-      padding: 10px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-      margin-bottom: 10px;
-    }
-    .detail-item { font-size: 12px; }
-    .detail-label { color: var(--text-muted); margin-bottom: 2px; }
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-bar select { flex: 1; min-width: 120px; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; }
+    .leave-list { background: white; border-radius: 12px; padding: 16px; }
+    .leave-item { padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+    .leave-item:last-child { border-bottom: none; }
+    .leave-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .leave-student { font-weight: 600; color: var(--text-primary); font-size: 16px; }
+    .leave-days { background: var(--primary-color); color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .leave-info { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+    .leave-reason { font-size: 14px; color: var(--text-primary); margin-bottom: 12px; padding: 8px; background: #f9f9f9; border-radius: 6px; }
     .leave-actions { display: flex; gap: 8px; }
-    .action-btn {
-      flex: 1; padding: 8px; border: none; border-radius: var(--radius-sm);
-      font-size: 12px; cursor: pointer;
-    }
-    .btn-approve { background: #E8F5E9; color: var(--success); }
-    .btn-reject { background: #FFEBEE; color: var(--error); }
-    .btn-detail { background: var(--bg-cream); color: var(--text-secondary); }
+    .leave-actions button { flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; }
+    .approve-btn { background: #28A745; color: white; }
+    .reject-btn { background: #DC3545; color: white; }
+    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; }
+    .status-pending { background: #FFF3CD; color: #856404; }
+    .status-approved { background: #D4EDDA; color: #155724; }
+    .status-rejected { background: #F8D7DA; color: #721C24; }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <button class="back-btn" onclick="history.back()">
-        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-      </button>
-      <div class="header-title">请销假</div>
-    </div>
-    <button class="add-btn" onclick="addLeave()">
-      <i data-lucide="plus" class="w-5 h-5"></i>
-    </button>
-  </header>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="app-title">请销假</h1>
+        </div>
+        <div class="header-right">
+          <button class="header-btn" onclick="addLeave()">+ 添加请假</button>
+        </div>
+      </div>
+    </header>
 
-  <div class="content">
-    <div class="leave-card">
-      <div class="leave-header">
-        <div class="leave-avatar">赵</div>
-        <div class="leave-info">
-          <div class="leave-name">赵强</div>
-          <div class="leave-type">病假 · 今天 08:00 申请</div>
-        </div>
-        <span class="leave-status status-pending">待审批</span>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>班级助手</h2>
+        <p class="subtitle">绿茵校园·智慧班级</p>
       </div>
-      <div class="leave-details">
-        <div class="detail-item">
-          <div class="detail-label">请假时间</div>
-          <div>今天 - 明天</div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">主功能</div>
+          <a href="index.html" class="nav-item"><span class="nav-icon"></span><span>主页信息</span></a>
+          <a href="students.html" class="nav-item"><span class="nav-icon">‍🎓</span><span>学生管理</span></a>
+          <a href="grades.html" class="nav-item"><span class="nav-icon">📈</span><span>成绩分析</span></a>
+          <a href="discipline.html" class="nav-item"><span class="nav-icon">⚖️</span><span>违纪统计</span></a>
+          <a href="homework.html" class="nav-item"><span class="nav-icon">📚</span><span>作业管理</span></a>
+          <a href="leave.html" class="nav-item active"><span class="nav-icon">🗓️</span><span>请销假</span></a>
         </div>
-        <div class="detail-item">
-          <div class="detail-label">请假天数</div>
-          <div>2 天</div>
+        <div class="nav-section">
+          <div class="nav-title">教学记录</div>
+          <a href="worklog.html" class="nav-item"><span class="nav-icon"></span><span>工作留痕</span></a>
+          <a href="talks.html" class="nav-item"><span class="nav-icon"></span><span>谈话记录</span></a>
+          <a href="seating.html" class="nav-item"><span class="nav-icon"></span><span>排座位</span></a>
         </div>
-        <div class="detail-item">
-          <div class="detail-label">请假原因</div>
-          <div>感冒发烧</div>
+        <div class="nav-section">
+          <div class="nav-title">AI 助手</div>
+          <a href="ai-prepare.html" class="nav-item"><span class="nav-icon">🤖</span><span>智能备课</span></a>
+          <a href="ai-analysis.html" class="nav-item"><span class="nav-icon">📊</span><span>学情分析</span></a>
+          <a href="ai-comment.html" class="nav-item"><span class="nav-icon">✍️</span><span>评语生成</span></a>
         </div>
-        <div class="detail-item">
-          <div class="detail-label">家长电话</div>
-          <div>136****3456</div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="teacher-info">
+          <div class="teacher-avatar" id="teacherAvatar">李</div>
+          <div>
+            <div class="teacher-name" id="teacherName">李老师</div>
+            <div class="teacher-role" id="teacherRole">班主任</div>
+          </div>
         </div>
       </div>
-      <div class="leave-actions">
-        <button class="action-btn btn-approve">批准</button>
-        <button class="action-btn btn-reject">拒绝</button>
-        <button class="action-btn btn-detail">详情</button>
-      </div>
-    </div>
+    </aside>
 
-    <div class="leave-card">
-      <div class="leave-header">
-        <div class="leave-avatar" style="background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);">孙</div>
-        <div class="leave-info">
-          <div class="leave-name">孙丽</div>
-          <div class="leave-type">事假 · 昨天 16:00 申请</div>
-        </div>
-        <span class="leave-status status-approved">已批准</span>
-      </div>
-      <div class="leave-details">
-        <div class="detail-item">
-          <div class="detail-label">请假时间</div>
-          <div>昨天 - 今天</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">请假天数</div>
-          <div>2 天</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">请假原因</div>
-          <div>家庭事务</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">家长电话</div>
-          <div>135****7890</div>
-        </div>
-      </div>
-      <div class="leave-actions">
-        <button class="action-btn btn-detail">查看详情</button>
-      </div>
-    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <div class="leave-card">
-      <div class="leave-header">
-        <div class="leave-avatar" style="background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);">周</div>
-        <div class="leave-info">
-          <div class="leave-name">周杰</div>
-          <div class="leave-type">病假 · 2026-05-10</div>
-        </div>
-        <span class="leave-status status-approved">已销假</span>
+    <main class="main-content">
+      <div class="filter-bar">
+        <select id="filterStudent" onchange="renderLeaveList()">
+          <option value="">全部学生</option>
+        </select>
+        <select id="filterStatus" onchange="renderLeaveList()">
+          <option value="">全部状态</option>
+          <option value="pending">待审批</option>
+          <option value="approved">已批准</option>
+          <option value="rejected">已拒绝</option>
+        </select>
       </div>
-      <div class="leave-details">
-        <div class="detail-item">
-          <div class="detail-label">请假时间</div>
-          <div>5 月 10 日 - 5 月 12 日</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">请假天数</div>
-          <div>3 天</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">请假原因</div>
-          <div>水痘隔离</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">销假时间</div>
-          <div>5 月 13 日</div>
-        </div>
+
+      <div class="leave-list" id="leaveList">
+        <div class="empty-state">暂无请假记录</div>
       </div>
-      <div class="leave-actions">
-        <button class="action-btn btn-detail">查看详情</button>
-      </div>
-    </div>
+    </main>
   </div>
 
+  <script src="js/data.js"></script>
   <script>
-    lucide.createIcons();
-    function addLeave() { alert('添加请假记录功能'); }
+    if (!classData.className || !classData.teacherName) {
+      window.location.href = 'setup.html';
+    }
+
+    function updatePage() {
+      document.getElementById('teacherName').textContent = (classData.teacherName || '老师') + '老师';
+      document.getElementById('teacherRole').textContent = classData.className || '班主任';
+      document.getElementById('teacherAvatar').textContent = (classData.teacherName || '老')[0];
+      
+      const studentFilter = document.getElementById('filterStudent');
+      studentFilter.innerHTML = '<option value="">全部学生</option>' + 
+        classData.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      
+      renderLeaveList();
+    }
+
+    function renderLeaveList() {
+      const list = document.getElementById('leaveList');
+      const studentFilter = document.getElementById('filterStudent').value;
+      const statusFilter = document.getElementById('filterStatus').value;
+      
+      let filtered = classData.leaves;
+      if (studentFilter) filtered = filtered.filter(l => l.studentId == studentFilter);
+      if (statusFilter) filtered = filtered.filter(l => l.status === statusFilter);
+      
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state">暂无请假记录</div>';
+        return;
+      }
+      
+      list.innerHTML = filtered.map(leave => {
+        const student = classData.students.find(s => s.id === leave.studentId);
+        const startDate = new Date(leave.startDate);
+        const endDate = new Date(leave.endDate);
+        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        const statusText = { pending: '待审批', approved: '已批准', rejected: '已拒绝' }[leave.status];
+        const statusClass = `status-${leave.status}`;
+        
+        return `
+          <div class="leave-item">
+            <div class="leave-header">
+              <div class="leave-student">${student ? student.name : '未知学生'}</div>
+              <span class="leave-days">${days}天</span>
+            </div>
+            <div class="leave-info">
+              ${leave.startDate} 至 ${leave.endDate}
+              <span class="status-badge ${statusClass}">${statusText}</span>
+            </div>
+            <div class="leave-reason">${leave.reason}</div>
+            ${leave.status === 'pending' ? `
+              <div class="leave-actions">
+                <button class="approve-btn" onclick="approveLeave(${leave.id})">批准</button>
+                <button class="reject-btn" onclick="rejectLeave(${leave.id})">拒绝</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addLeave() {
+      if (classData.students.length === 0) {
+        alert('请先添加学生');
+        return;
+      }
+      
+      const studentId = prompt('选择学生 ID（查看学生管理页面获取）：');
+      if (!studentId) return;
+      
+      const student = classData.students.find(s => s.id == studentId);
+      if (!student) {
+        alert('学生不存在');
+        return;
+      }
+      
+      const startDate = prompt('开始日期（格式：YYYY-MM-DD）：', new Date().toISOString().split('T')[0]);
+      if (!startDate) return;
+      
+      const endDate = prompt('结束日期（格式：YYYY-MM-DD）：', new Date().toISOString().split('T')[0]);
+      if (!endDate) return;
+      
+      const reason = prompt('请假理由：');
+      if (!reason) return;
+      
+      classData.leaves.push({
+        id: Date.now(),
+        studentId: parseInt(studentId),
+        startDate,
+        endDate,
+        reason,
+        status: 'pending',
+        approvalOpinion: ''
+      });
+      
+      saveData();
+      renderLeaveList();
+    }
+
+    function approveLeave(id) {
+      const opinion = prompt('审批意见（可选）：', '');
+      const leave = classData.leaves.find(l => l.id === id);
+      if (leave) {
+        leave.status = 'approved';
+        leave.approvalOpinion = opinion;
+        saveData();
+        renderLeaveList();
+      }
+    }
+
+    function rejectLeave(id) {
+      const opinion = prompt('拒绝理由（可选）：', '');
+      const leave = classData.leaves.find(l => l.id === id);
+      if (leave) {
+        leave.status = 'rejected';
+        leave.approvalOpinion = opinion;
+        saveData();
+        renderLeaveList();
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    updatePage();
   </script>
 </body>
 </html>
