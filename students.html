@@ -3,240 +3,291 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 学生管理</title>
+  <title>学生管理 - 班级助手</title>
+  <script src="js/data.js"></script>
   <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #FF8C69;
-      --primary-light: #FFA88C;
-      --bg: #FFF8F0;
-      --bg-card: #FFFFFF;
-      --bg-cream: #FFF5EB;
-      --text-primary: #2D2D2D;
-      --text-secondary: #6B6B6B;
-      --text-muted: #999999;
-      --border: #FFE8D6;
-      --success: #4CAF50;
-      --warning: #FF9800;
-      --error: #F44336;
-      --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
-      --radius: 16px;
-      --radius-sm: 12px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text-primary);
-      min-height: 100vh;
-      padding-bottom: 80px;
-    }
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-    }
-    .header-title { color: white; font-size: 18px; font-weight: 600; }
-    .add-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-    }
-    .content { padding: 16px; }
-    .search-bar {
-      display: flex; gap: 8px; margin-bottom: 16px;
-    }
-    .search-input {
-      flex: 1; padding: 12px 16px; border: none;
-      background: var(--bg-card); border-radius: var(--radius);
-      font-size: 14px; box-shadow: var(--shadow);
-    }
-    .filter-btn {
-      padding: 12px 16px; border: none;
-      background: var(--bg-card); border-radius: var(--radius);
-      color: var(--text-secondary); cursor: pointer; box-shadow: var(--shadow);
-    }
-    .student-card {
-      background: var(--bg-card); border-radius: var(--radius);
-      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
-    }
-    .student-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .student-avatar {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 18px; font-weight: 600;
-    }
-    .student-info { flex: 1; }
-    .student-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-    .student-id { font-size: 12px; color: var(--text-muted); }
-    .student-status {
-      padding: 4px 10px; border-radius: 12px;
-      font-size: 11px; font-weight: 600;
-    }
-    .status-normal { background: #E8F5E9; color: var(--success); }
-    .status-warning { background: #FFF3E0; color: var(--warning); }
-    .student-details {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 8px; padding-top: 12px; border-top: 1px solid var(--border);
-    }
-    .detail-item { font-size: 12px; color: var(--text-secondary); }
-    .detail-label { color: var(--text-muted); margin-bottom: 2px; }
-    .student-actions {
-      display: flex; gap: 8px; margin-top: 12px;
-    }
-    .action-btn {
-      flex: 1; padding: 8px; border: none;
-      background: var(--bg-cream); border-radius: var(--radius-sm);
-      font-size: 12px; color: var(--text-secondary); cursor: pointer;
-    }
-    .action-btn.primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      color: white;
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <button class="back-btn" onclick="history.back()">
-        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-      </button>
-      <div class="header-title">学生管理</div>
-    </div>
-    <button class="add-btn" onclick="addStudent()">
-      <i data-lucide="plus" class="w-5 h-5"></i>
-    </button>
-  </header>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-btn" onclick="toggleSidebar()">
+            <i data-lucide="menu"></i>
+          </button>
+          <div>
+            <h1 class="header-title">学生管理</h1>
+            <div class="header-subtitle">三年级 (2) 班 · 42 名学生</div>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="header-btn" onclick="showAddStudent()">
+            <i data-lucide="plus"></i>
+          </button>
+        </div>
+      </div>
+    </header>
 
-  <div class="content">
-    <div class="search-bar">
-      <input type="text" class="search-input" placeholder="搜索学生姓名或学号...">
-      <button class="filter-btn">
-        <i data-lucide="filter" class="w-4 h-4"></i>
-      </button>
-    </div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title">班级助手</h2>
+        <div class="sidebar-subtitle">绿茵校园·智慧班级</div>
+        <div class="class-selector">
+          <div class="class-name">三年级 (2) 班</div>
+          <div class="class-stats">42 名学生 · 班主任</div>
+          <button class="edit-btn">️ 点击编辑 / 切换</button>
+        </div>
+      </div>
 
-    <div class="student-card">
-      <div class="student-header">
-        <div class="student-avatar">张</div>
-        <div class="student-info">
-          <div class="student-name">张小明</div>
-          <div class="student-id">学号：001</div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">主功能</div>
+          <a href="index.html" class="nav-item">
+            <span class="nav-icon"></span>
+            <span>主页信息</span>
+          </a>
+          <a href="students.html" class="nav-item active">
+            <span class="nav-icon">👨‍🎓</span>
+            <span>学生管理</span>
+          </a>
+          <a href="grades.html" class="nav-item">
+            <span class="nav-icon">📈</span>
+            <span>成绩分析</span>
+          </a>
+          <a href="discipline.html" class="nav-item">
+            <span class="nav-icon">️</span>
+            <span>违纪统计</span>
+          </a>
+          <a href="homework.html" class="nav-item">
+            <span class="nav-icon">📚</span>
+            <span>作业管理</span>
+          </a>
+          <a href="leave.html" class="nav-item">
+            <span class="nav-icon">️</span>
+            <span>请销假</span>
+          </a>
         </div>
-        <span class="student-status status-normal">正常</span>
-      </div>
-      <div class="student-details">
-        <div class="detail-item">
-          <div class="detail-label">座位</div>
-          <div>第 1 排第 2 列</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">家长电话</div>
-          <div>138****1234</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">最近成绩</div>
-          <div>92 分</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">作业提交</div>
-          <div>98%</div>
-        </div>
-      </div>
-      <div class="student-actions">
-        <button class="action-btn">编辑</button>
-        <button class="action-btn">谈话</button>
-        <button class="action-btn primary">查看详情</button>
-      </div>
-    </div>
 
-    <div class="student-card">
-      <div class="student-header">
-        <div class="student-avatar">李</div>
-        <div class="student-info">
-          <div class="student-name">李华</div>
-          <div class="student-id">学号：002</div>
+        <div class="nav-section">
+          <div class="nav-title">教学记录</div>
+          <a href="worklog.html" class="nav-item">
+            <span class="nav-icon">📝</span>
+            <span>工作留痕</span>
+          </a>
+          <a href="talks.html" class="nav-item">
+            <span class="nav-icon"></span>
+            <span>谈话记录</span>
+          </a>
+          <a href="seating.html" class="nav-item">
+            <span class="nav-icon">🪑</span>
+            <span>排座位</span>
+          </a>
         </div>
-        <span class="student-status status-normal">正常</span>
-      </div>
-      <div class="student-details">
-        <div class="detail-item">
-          <div class="detail-label">座位</div>
-          <div>第 1 排第 3 列</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">家长电话</div>
-          <div>139****5678</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">最近成绩</div>
-          <div>88 分</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">作业提交</div>
-          <div>95%</div>
-        </div>
-      </div>
-      <div class="student-actions">
-        <button class="action-btn">编辑</button>
-        <button class="action-btn">谈话</button>
-        <button class="action-btn primary">查看详情</button>
-      </div>
-    </div>
 
-    <div class="student-card">
-      <div class="student-header">
-        <div class="student-avatar" style="background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);">王</div>
-        <div class="student-info">
-          <div class="student-name">王芳</div>
-          <div class="student-id">学号：003</div>
+        <div class="nav-section">
+          <div class="nav-title">AI 助手</div>
+          <a href="ai-prepare.html" class="nav-item">
+            <span class="nav-icon"></span>
+            <span>智能备课</span>
+          </a>
+          <a href="ai-analysis.html" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span>学情分析</span>
+          </a>
+          <a href="ai-comment.html" class="nav-item">
+            <span class="nav-icon">✍️</span>
+            <span>评语生成</span>
+          </a>
         </div>
-        <span class="student-status status-warning">关注</span>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="teacher-info">
+          <div class="teacher-avatar">李</div>
+          <div>
+            <div class="teacher-name">李老师</div>
+            <div class="teacher-role">三年级 (2) 班 · 班主任</div>
+          </div>
+        </div>
+        <div class="footer-actions">
+          <button class="action-btn" onclick="exportData()">⬇️ 导出备份</button>
+          <button class="action-btn" onclick="importData()">⬆️ 导入备份</button>
+          <button class="action-btn">🌓 切换模式</button>
+          <button class="action-btn logout-btn">🔙 返回登录</button>
+        </div>
       </div>
-      <div class="student-details">
-        <div class="detail-item">
-          <div class="detail-label">座位</div>
-          <div>第 2 排第 1 列</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">家长电话</div>
-          <div>137****9012</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">最近成绩</div>
-          <div>76 分</div>
-        </div>
-        <div class="detail-item">
-          <div class="detail-label">作业提交</div>
-          <div>82%</div>
-        </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main class="main-content">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="搜索学生姓名..." oninput="filterStudents()">
+        <button class="search-btn">
+          <i data-lucide="search"></i>
+        </button>
       </div>
-      <div class="student-actions">
-        <button class="action-btn">编辑</button>
-        <button class="action-btn">谈话</button>
-        <button class="action-btn primary">查看详情</button>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterByGroup('all')">全部</button>
+        <button class="filter-tab" onclick="filterByGroup('group1')">第 1 组</button>
+        <button class="filter-tab" onclick="filterByGroup('group2')">第 2 组</button>
+        <button class="filter-tab" onclick="filterByGroup('group3')">第 3 组</button>
+        <button class="filter-tab" onclick="filterByGroup('group4')">第 4 组</button>
       </div>
-    </div>
+
+      <div class="student-list" id="student-list">
+        <!-- 学生列表将动态生成 -->
+      </div>
+    </main>
   </div>
 
   <script>
     lucide.createIcons();
-    function addStudent() { alert('添加学生功能'); }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    let currentFilter = 'all';
+    let searchKeyword = '';
+
+    function renderStudents() {
+      const students = dataStore.getStudents();
+      const studentList = document.getElementById('student-list');
+      
+      let filtered = students;
+      
+      if (currentFilter !== 'all') {
+        filtered = filtered.filter(s => s.group === currentFilter);
+      }
+      
+      if (searchKeyword) {
+        filtered = filtered.filter(s => s.name.includes(searchKeyword));
+      }
+
+      if (filtered.length === 0) {
+        studentList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px;">暂无学生</div>';
+        return;
+      }
+
+      studentList.innerHTML = filtered.map((student, index) => `
+        <div class="student-card">
+          <div class="student-avatar">${student.name[0]}</div>
+          <div class="student-info">
+            <div class="student-name">${student.name}</div>
+            <div class="student-meta">
+              <span class="student-group">${student.groupName}</span>
+              <span class="student-number">学号：${student.number}</span>
+            </div>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn-small" onclick="editStudent(${students.indexOf(student)})">编辑</button>
+            <button class="action-btn-small danger" onclick="deleteStudent(${students.indexOf(student)})">删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterByGroup(group) {
+      currentFilter = group;
+      document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      renderStudents();
+    }
+
+    function filterStudents() {
+      searchKeyword = document.getElementById('searchInput').value;
+      renderStudents();
+    }
+
+    function showAddStudent() {
+      const name = prompt('学生姓名：');
+      if (!name) return;
+      
+      const number = prompt('学号：');
+      const group = prompt('分组（group1/group2/group3/group4）：', 'group1');
+      const groupName = prompt('组名：', '第 1 组');
+      
+      dataStore.addStudent({
+        name,
+        number,
+        group,
+        groupName,
+        avatar: name[0]
+      });
+      
+      renderStudents();
+    }
+
+    function editStudent(index) {
+      const students = dataStore.getStudents();
+      const student = students[index];
+      
+      const name = prompt('学生姓名：', student.name);
+      if (!name) return;
+      
+      const number = prompt('学号：', student.number);
+      const group = prompt('分组：', student.group);
+      const groupName = prompt('组名：', student.groupName);
+      
+      dataStore.updateStudent(index, {
+        name,
+        number,
+        group,
+        groupName,
+        avatar: name[0]
+      });
+      
+      renderStudents();
+    }
+
+    function deleteStudent(index) {
+      if (confirm('确定删除这个学生吗？')) {
+        dataStore.deleteStudent(index);
+        renderStudents();
+      }
+    }
+
+    function exportData() {
+      const data = dataStore.exportAll();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `班级助手备份_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('导出成功！');
+    }
+
+    function importData() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            dataStore.importAll(data);
+            alert('导入成功！');
+            location.reload();
+          } catch (err) {
+            alert('导入失败：文件格式错误');
+          }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    }
+
+    renderStudents();
   </script>
 </body>
 </html>
