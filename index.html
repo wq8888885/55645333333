@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#FF8C69">
+  <title>班级助手 - 绿茵校园·智慧班级</title>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #FF8C69;
+      --primary-light: #FFA88C;
+      --primary-dark: #E67350;
+      --secondary: #FFD166;
+      --accent: #FFB347;
+      --bg: #FFF8F0;
+      --bg-card: #FFFFFF;
+      --bg-cream: #FFF5EB;
+      --text-primary: #2D2D2D;
+      --text-secondary: #6B6B6B;
+      --text-muted: #999999;
+      --border: #FFE8D6;
+      --success: #4CAF50;
+      --warning: #FF9800;
+      --error: #F44336;
+      --info: #2196F3;
+      --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
+      --shadow-lg: 0 4px 20px rgba(255, 140, 105, 0.12);
+      --radius: 16px;
+      --radius-sm: 12px;
+      --radius-lg: 20px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      overscroll-behavior: none;
+    }
+
+    /* 移动端触摸优化 */
+    button, a, .card, .stat-card, .todo-item {
+      -webkit-tap-highlight-color: rgba(255, 140, 105, 0.1);
+      touch-action: manipulation;
+    }
+
+    button:active, .card:active, .stat-card:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    /* 顶部导航 */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .menu-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .header-title {
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .header-subtitle {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 8px;
+    }
+
+    .header-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* 侧边栏 */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100%;
+      background: var(--bg-card);
+      z-index: 201;
+      transition: left 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 24px 20px;
+      color: white;
+    }
+
+    .sidebar-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 16px;
+    }
+
+    .class-selector {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .class-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .class-info {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 8px;
+    }
+
+    .class-edit {
+      font-size: 11px;
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sidebar-menu {
+      padding: 16px;
+    }
+
+    .menu-section {
+      margin-bottom: 20px;
+    }
+
+    .menu-section-title {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      padding-left: 12px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+    }
+
+    .menu-item:hover {
+      background: var(--bg-cream);
+    }
+
+    .menu-item.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+    }
+
+    .menu-item.active i {
+      color: white;
+    }
+
+    .menu-item i {
+      width: 20px;
+      height: 20px;
+      color: var(--text-secondary);
+    }
+
+    .menu-item span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .teacher-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .teacher-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .teacher-name {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .teacher-role {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .sidebar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .sidebar-action-btn:hover {
+      background: var(--bg-cream);
+    }
+
+    .sidebar-action-btn i {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+
+    /* 问候区域 */
+    .greeting-section {
+      margin-bottom: 20px;
+    }
+
+    .greeting-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .greeting-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* 天气卡片 */
+    .weather-card {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: white;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .weather-icon {
+      font-size: 48px;
+    }
+
+    .weather-temp {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .weather-info {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    /* 数据卡片网格 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .stat-icon.green {
+      background: #E8F5E9;
+      color: var(--success);
+    }
+
+    .stat-icon.orange {
+      background: #FFF3E0;
+      color: var(--warning);
+    }
+
+    .stat-icon.red {
+      background: #FFEBEE;
+      color: var(--error);
+    }
+
+    .stat-icon.blue {
+      background: #E3F2FD;
+      color: var(--info);
+    }
+
+    .stat-icon.purple {
+      background: #F3E5F5;
+      color: #9C27B0;
+    }
+
+    .stat-icon.pink {
+      background: #FCE4EC;
+      color: #E91E63;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-value.green { color: var(--success); }
+    .stat-value.orange { color: var(--warning); }
+    .stat-value.red { color: var(--error); }
+    .stat-value.blue { color: var(--info); }
+    .stat-value.purple { color: #9C27B0; }
+    .stat-value.pink { color: #E91E63; }
+
+    .stat-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* 快捷操作 */
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      scrollbar-width: none;
+    }
+
+    .quick-actions::-webkit-scrollbar {
+      display: none;
+    }
+
+    .quick-action-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: none;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+
+    .quick-action-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .quick-action-btn i {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* 学生头像列表 */
+    .students-section {
+      margin-bottom: 20px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title i {
+      width: 20px;
+      height: 20px;
+      color: var(--primary);
+    }
+
+    .section-link {
+      font-size: 13px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .students-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+
+    .students-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .student-avatar-item {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .student-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      position: relative;
+    }
+
+    .student-avatar.status-normal {
+      background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    }
+
+    .student-avatar.status-warning {
+      background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);
+    }
+
+    .student-avatar.status-error {
+      background: linear-gradient(135deg, #F44336 0%, #EF5350 100%);
+    }
+
+    .student-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+
+    .student-status.online { background: var(--success); }
+    .student-status.offline { background: var(--text-muted); }
+
+    .student-name {
+      font-size: 11px;
+      color: var(--text-secondary);
+      max-width: 48px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 待办事项 */
+    .todo-section {
+      margin-bottom: 20px;
+    }
+
+    .todo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .todo-item {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .todo-tag {
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .todo-tag.reminder {
+      background: #FFF3E0;
+      color: var(--warning);
+    }
+
+    .todo-tag.routine {
+      background: #E8F5E9;
+      color: var(--success);
+    }
+
+    .todo-tag.communication {
+      background: #E3F2FD;
+      color: var(--info);
+    }
+
+    .todo-content {
+      flex: 1;
+    }
+
+    .todo-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .todo-time {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .todo-delete {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--error);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .todo-delete:hover {
+      background: #FFEBEE;
+    }
+
+    .todo-delete i {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* 日程时间轴 */
+    .timeline-section {
+      margin-bottom: 20px;
+    }
+
+    .timeline-list {
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .timeline-list::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 16px;
+    }
+
+    .timeline-item:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -20px;
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .timeline-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .timeline-content {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .timeline-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .timeline-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* 页面容器 */
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* 底部导航 */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      display: flex;
+      justify-content: around;
+      padding: 8px 0;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom));
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 50;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .nav-item i {
+      width: 22px;
+      height: 22px;
+      color: var(--text-muted);
+    }
+
+    .nav-item span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .nav-item.active i {
+      color: var(--primary);
+    }
+
+    .nav-item.active span {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* 功能页面样式 */
+    .feature-page {
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .feature-add-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .feature-add-btn i {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* 列表项 */
+    .list-item {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .list-item-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .list-item-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .list-item-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .list-item-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .list-item-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .list-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .list-item-meta i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .list-item-action {
+      font-size: 13px;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* 表单样式 */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      background: var(--bg-cream);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    /* 模态框 */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 400px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-cream);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close i {
+      width: 18px;
+      height: 18px;
+      color: var(--text-secondary);
+    }
+
+    /* AI 助手专区 */
+    .ai-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .ai-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-subtitle {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 16px;
+    }
+
+    .ai-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .ai-feature-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 12px 8px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .ai-feature-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .ai-feature-btn i {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 6px;
+    }
+
+    .ai-feature-btn span {
+      display: block;
+      font-size: 11px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 380px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .quick-actions {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .header-title {
+        font-size: 16px;
+      }
+      
+      .header-subtitle {
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .stat-card {
+        padding: 16px;
+      }
+      
+      .stat-value {
+        font-size: 28px;
+      }
+      
+      .todo-item {
+        padding: 12px;
+      }
+    }
+
+    /* 安全区域适配（iPhone X+） */
+    @supports (padding-top: env(safe-area-inset-top)) {
+      .header {
+        padding-top: env(safe-area-inset-top);
+      }
+      
+      .bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="header-left">
+      <button class="menu-btn" onclick="toggleSidebar()">
+        <i data-lucide="menu" class="w-5 h-5"></i>
+      </button>
+      <div>
+        <div class="header-title">班级助手</div>
+        <div class="header-subtitle">绿茵校园 · 智慧班级</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="header-btn">
+        <i data-lucide="bell" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- 侧边栏遮罩 -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- 侧边栏 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">班级助手</div>
+      <div class="sidebar-subtitle">绿茵校园 · 智慧班级</div>
+      <div class="class-selector">
+        <div class="class-name">三年级（2）班</div>
+        <div class="class-info">42 名学生 · 班主任</div>
+        <div class="class-edit">
+          <i data-lucide="pencil" class="w-3 h-3"></i>
+          点击编辑 / 切换
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-menu">
+      <div class="menu-section">
+        <div class="menu-section-title">主功能</div>
+        <div class="menu-item active" onclick="showPage('home')">
+          <i data-lucide="home"></i>
+          <span>主页信息</span>
+        </div>
+        <div class="menu-item" onclick="showPage('students')">
+          <i data-lucide="users"></i>
+          <span>学生管理</span>
+        </div>
+        <div class="menu-item" onclick="showPage('grades')">
+          <i data-lucide="trending-up"></i>
+          <span>成绩分析</span>
+        </div>
+        <div class="menu-item" onclick="showPage('discipline')">
+          <i data-lucide="scale"></i>
+          <span>违纪统计</span>
+        </div>
+        <div class="menu-item" onclick="showPage('homework')">
+          <i data-lucide="book-open"></i>
+          <span>作业管理</span>
+        </div>
+        <div class="menu-item" onclick="showPage('leave')">
+          <i data-lucide="calendar-days"></i>
+          <span>请销假</span>
+        </div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section-title">教学记录</div>
+        <div class="menu-item" onclick="showPage('worklog')">
+          <i data-lucide="file-text"></i>
+          <span>工作留痕</span>
+        </div>
+        <div class="menu-item" onclick="showPage('talks')">
+          <i data-lucide="message-circle"></i>
+          <span>谈话记录</span>
+        </div>
+        <div class="menu-item" onclick="showPage('seating')">
+          <i data-lucide="layout-grid"></i>
+          <span>排座位</span>
+        </div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-section-title">AI 助手</div>
+        <div class="menu-item" onclick="showPage('ai-prepare')">
+          <i data-lucide="sparkles"></i>
+          <span>智能备课</span>
+        </div>
+        <div class="menu-item" onclick="showPage('ai-analysis')">
+          <i data-lucide="brain"></i>
+          <span>学情分析</span>
+        </div>
+        <div class="menu-item" onclick="showPage('ai-comment')">
+          <i data-lucide="message-square"></i>
+          <span>评语生成</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="teacher-info">
+        <div class="teacher-avatar">李</div>
+        <div>
+          <div class="teacher-name">李老师</div>
+          <div class="teacher-role">三年级（2）班 · 班主任</div>
+        </div>
+      </div>
+      <div class="sidebar-actions">
+        <button class="sidebar-action-btn" onclick="exportData()">
+          <i data-lucide="download"></i>
+          <span>导出备份</span>
+        </button>
+        <button class="sidebar-action-btn" onclick="importData()">
+          <i data-lucide="upload"></i>
+          <span>导入备份</span>
+        </button>
+        <button class="sidebar-action-btn">
+          <i data-lucide="moon"></i>
+          <span>切换模式</span>
+        </button>
+        <button class="sidebar-action-btn" onclick="logout()">
+          <i data-lucide="log-out"></i>
+          <span>返回登录</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- 主内容区 -->
+  <main class="main-content">
+    <!-- 主页 -->
+    <div class="page active" id="page-home">
+      <!-- 问候 -->
+      <div class="greeting-section">
+        <h1 class="greeting-title">晚上好，李老师 </h1>
+        <p class="greeting-subtitle">愿今日的每一份耕耘，都化作孩子成长的绿荫。</p>
+      </div>
+
+      <!-- 天气 -->
+      <div class="weather-card">
+        <div class="weather-icon">️</div>
+        <div>
+          <div class="weather-temp">26°</div>
+          <div class="weather-info">校园内 · 空气优</div>
+        </div>
+      </div>
+
+      <!-- 数据卡片 -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon green">
+              <i data-lucide="sprout"></i>
+            </div>
+            <span class="stat-label">今日请假</span>
+          </div>
+          <div class="stat-value green">0</div>
+          <div class="stat-desc">今日无人请假</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon orange">
+              <i data-lucide="book-open"></i>
+            </div>
+            <span class="stat-label">作业未交</span>
+          </div>
+          <div class="stat-value orange">9</div>
+          <div class="stat-desc">共 3 份作业</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon red">
+              <i data-lucide="scale"></i>
+            </div>
+            <span class="stat-label">本周违纪</span>
+          </div>
+          <div class="stat-value red">3</div>
+          <div class="stat-desc">本周违纪记录</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon blue">
+              <i data-lucide="pin"></i>
+            </div>
+            <span class="stat-label">本月工作留痕</span>
+          </div>
+          <div class="stat-value blue">2</div>
+          <div class="stat-desc">条记录</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon purple">
+              <i data-lucide="clipboard-list"></i>
+            </div>
+            <span class="stat-label">待办事项</span>
+          </div>
+          <div class="stat-value purple">5</div>
+          <div class="stat-desc">待处理事项</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon pink">
+              <i data-lucide="award"></i>
+            </div>
+            <span class="stat-label">成绩平均分</span>
+          </div>
+          <div class="stat-value pink">88.7</div>
+          <div class="stat-desc">本月月考</div>
+        </div>
+      </div>
+
+      <!-- 快捷操作 -->
+      <div class="quick-actions">
+        <button class="quick-action-btn" onclick="showPage('leave')">
+          <i data-lucide="calendar-plus"></i>
+          <span>记请假</span>
+        </button>
+        <button class="quick-action-btn" onclick="showPage('homework')">
+          <i data-lucide="book-plus"></i>
+          <span>记作业</span>
+        </button>
+        <button class="quick-action-btn" onclick="showPage('discipline')">
+          <i data-lucide="alert-triangle"></i>
+          <span>记违纪</span>
+        </button>
+        <button class="quick-action-btn" onclick="showPage('worklog')">
+          <i data-lucide="file-plus"></i>
+          <span>记工作</span>
+        </button>
+        <button class="quick-action-btn" onclick="showPage('students')">
+          <i data-lucide="users"></i>
+          <span>学生管理</span>
+        </button>
+        <button class="quick-action-btn" onclick="syncData()">
+          <i data-lucide="refresh-cw"></i>
+          <span>同步</span>
+        </button>
+      </div>
+
+      <!-- 学生头像 -->
+      <div class="students-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i data-lucide="users"></i>
+            班级学生
+          </h3>
+          <span class="section-link" onclick="showPage('students')">查看全部 ›</span>
+        </div>
+        <div class="students-scroll">
+          <div class="student-avatar-item">
+            <div class="student-avatar status-normal">
+              张
+              <div class="student-status online"></div>
+            </div>
+            <span class="student-name">张小明</span>
+          </div>
+          <div class="student-avatar-item">
+            <div class="student-avatar status-normal">
+              李
+              <div class="student-status online"></div>
+            </div>
+            <span class="student-name">李华</span>
+          </div>
+          <div class="student-avatar-item">
+            <div class="student-avatar status-warning">
+              王
+              <div class="student-status online"></div>
+            </div>
+            <span class="student-name">王芳</span>
+          </div>
+          <div class="student-avatar-item">
+            <div class="student-avatar status-normal">
+              赵
+              <div class="student-status online"></div>
+            </div>
+            <span class="student-name">赵强</span>
+          </div>
+          <div class="student-avatar-item">
+            <div class="student-avatar status-error">
+              刘
+              <div class="student-status offline"></div>
+            </div>
+            <span class="student-name">刘洋</span>
+          </div>
+          <div class="student-avatar-item">
+            <div class="student-avatar status-normal">
+              陈
+              <div class="student-status online"></div>
+            </div>
+            <span class="student-name">陈静</span>
+          </div>
+          <div class="student-avatar-item">
+            <div class="student-avatar status-normal">
+              杨
+              <div class="student-status online"></div>
+            </div>
+            <span class="student-name">杨帆</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI 助手 -->
+      <div class="ai-section">
+        <div class="ai-title">
+          <i data-lucide="sparkles" class="w-5 h-5"></i>
+          AI 助手
+        </div>
+        <div class="ai-subtitle">智能辅助，让教学更高效</div>
+        <div class="ai-features">
+          <button class="ai-feature-btn" onclick="showPage('ai-prepare')">
+            <i data-lucide="book-open"></i>
+            <span>智能备课</span>
+          </button>
+          <button class="ai-feature-btn" onclick="showPage('ai-analysis')">
+            <i data-lucide="brain"></i>
+            <span>学情分析</span>
+          </button>
+          <button class="ai-feature-btn" onclick="showPage('ai-comment')">
+            <i data-lucide="message-square"></i>
+            <span>评语生成</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 待办事项 -->
+      <div class="todo-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i data-lucide="clipboard-list"></i>
+            待办事项
+          </h3>
+          <span class="section-link" onclick="openAddTodo()">+ 新增</span>
+        </div>
+        <div class="todo-list">
+          <div class="todo-item">
+            <span class="todo-tag reminder">提醒</span>
+            <div class="todo-content">
+              <div class="todo-title">班会课需准备安全教育材料</div>
+              <div class="todo-time">明天 08:00</div>
+            </div>
+            <button class="todo-delete" onclick="deleteTodo(this)">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+          <div class="todo-item">
+            <span class="todo-tag routine">常规</span>
+            <div class="todo-content">
+              <div class="todo-title">下周期中家长会，需提前发通知</div>
+              <div class="todo-time">周五</div>
+            </div>
+            <button class="todo-delete" onclick="deleteTodo(this)">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+          <div class="todo-item">
+            <span class="todo-tag communication">沟通</span>
+            <div class="todo-content">
+              <div class="todo-title">与新转入学生张乐进行入学谈话</div>
+              <div class="todo-time">本周内</div>
+            </div>
+            <button class="todo-delete" onclick="deleteTodo(this)">
+              <i data-lucide="trash-2"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 今日日程 -->
+      <div class="timeline-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i data-lucide="clock"></i>
+            今日日程
+          </h3>
+        </div>
+        <div class="timeline-list">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">08:00 - 08:40</div>
+            <div class="timeline-content">
+              <div class="timeline-title">早读课</div>
+              <div class="timeline-desc">语文课文朗读</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">09:00 - 09:40</div>
+            <div class="timeline-content">
+              <div class="timeline-title">数学课</div>
+              <div class="timeline-desc">分数的初步认识</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">14:00 - 14:40</div>
+            <div class="timeline-content">
+              <div class="timeline-title">班会课</div>
+              <div class="timeline-desc">安全教育主题</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-time">16:00 - 16:30</div>
+            <div class="timeline-content">
+              <div class="timeline-title">课后辅导</div>
+              <div class="timeline-desc">作业答疑</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 学生管理页 -->
+    <div class="page" id="page-students">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">学生管理</h2>
+          <button class="feature-add-btn" onclick="openAddStudent()">
+            <i data-lucide="plus"></i>
+          </button>
+        </div>
+        <div class="list-item">
+          <div class="list-item-header">
+            <span class="list-item-title">张小明</span>
+            <span class="list-item-badge" style="background: #E8F5E9; color: #4CAF50;">正常</span>
+          </div>
+          <div class="list-item-desc">学号：001 · 座位：第 1 排第 2 列</div>
+          <div class="list-item-footer">
+            <div class="list-item-meta">
+              <i data-lucide="phone"></i>
+              <span>138****1234</span>
+            </div>
+            <span class="list-item-action">编辑</span>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-header">
+            <span class="list-item-title">李华</span>
+            <span class="list-item-badge" style="background: #E8F5E9; color: #4CAF50;">正常</span>
+          </div>
+          <div class="list-item-desc">学号：002 · 座位：第 1 排第 3 列</div>
+          <div class="list-item-footer">
+            <div class="list-item-meta">
+              <i data-lucide="phone"></i>
+              <span>139****5678</span>
+            </div>
+            <span class="list-item-action">编辑</span>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-header">
+            <span class="list-item-title">王芳</span>
+            <span class="list-item-badge" style="background: #FFF3E0; color: #FF9800;">关注</span>
+          </div>
+          <div class="list-item-desc">学号：003 · 座位：第 2 排第 1 列</div>
+          <div class="list-item-footer">
+            <div class="list-item-meta">
+              <i data-lucide="phone"></i>
+              <span>137****9012</span>
+            </div>
+            <span class="list-item-action">编辑</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 作业管理页 -->
+    <div class="page" id="page-homework">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">作业管理</h2>
+          <button class="feature-add-btn" onclick="openAddHomework()">
+            <i data-lucide="plus"></i>
+          </button>
+        </div>
+        <div class="stats-grid" style="margin-bottom: 20px;">
+          <div class="stat-card">
+            <div class="stat-value blue">3</div>
+            <div class="stat-desc">今日作业</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value orange">9</div>
+            <div class="stat-desc">未交人数</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-header">
+            <span class="list-item-title">数学·分数练习题</span>
+            <span class="list-item-badge" style="background: #FFF3E0; color: #FF9800;">9 人未交</span>
+          </div>
+          <div class="list-item-desc">第 42-45 页，完成练习 1-5 题</div>
+          <div class="list-item-footer">
+            <div class="list-item-meta">
+              <i data-lucide="clock"></i>
+              <span>截止：今天 18:00</span>
+            </div>
+            <span class="list-item-action">查看</span>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-header">
+            <span class="list-item-title">语文·课文背诵</span>
+            <span class="list-item-badge" style="background: #FFF3E0; color: #FF9800;">2 人未交</span>
+          </div>
+          <div class="list-item-desc">背诵《春晓》，家长签字确认</div>
+          <div class="list-item-footer">
+            <div class="list-item-meta">
+              <i data-lucide="clock"></i>
+              <span>截止：明天 08:00</span>
+            </div>
+            <span class="list-item-action">查看</span>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-item-header">
+            <span class="list-item-title">英语·单词默写</span>
+            <span class="list-item-badge" style="background: #E8F5E9; color: #4CAF50;">已收齐</span>
+          </div>
+          <div class="list-item-desc">Unit 3 单词表，准备明天默写</div>
+          <div class="list-item-footer">
+            <div class="list-item-meta">
+              <i data-lucide="check-circle"></i>
+              <span>已完成</span>
+            </div>
+            <span class="list-item-action">查看</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 其他功能页占位 -->
+    <div class="page" id="page-grades">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">成绩分析</h2>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-discipline">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">违纪统计</h2>
+          <button class="feature-add-btn" onclick="openAddDiscipline()">
+            <i data-lucide="plus"></i>
+          </button>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-leave">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">请销假</h2>
+          <button class="feature-add-btn" onclick="openAddLeave()">
+            <i data-lucide="plus"></i>
+          </button>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-worklog">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">工作留痕</h2>
+          <button class="feature-add-btn" onclick="openAddWorklog()">
+            <i data-lucide="plus"></i>
+          </button>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-talks">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">谈话记录</h2>
+          <button class="feature-add-btn" onclick="openAddTalk()">
+            <i data-lucide="plus"></i>
+          </button>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-seating">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">排座位</h2>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-ai-prepare">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">智能备课</h2>
+        </div>
+        <div class="ai-section" style="margin-top: 20px;">
+          <div class="ai-title">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+            AI 备课助手
+          </div>
+          <div class="ai-subtitle">输入课题，AI 帮您生成教案框架</div>
+          <div class="form-group" style="margin-top: 16px;">
+            <input type="text" class="form-input" placeholder="输入课题，如：三年级数学·分数的初步认识" style="background: rgba(255,255,255,0.2); color: white; placeholder: rgba(255,255,255,0.6);">
+          </div>
+          <button class="btn-primary" style="background: rgba(255,255,255,0.3); margin-top: 12px;">开始生成</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-ai-analysis">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">学情分析</h2>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-ai-comment">
+      <div class="feature-page">
+        <div class="feature-header">
+          <h2 class="feature-title">评语生成</h2>
+        </div>
+        <p style="text-align: center; color: var(--text-muted); padding: 40px 0;">功能开发中...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- 底部导航 -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('home')">
+      <i data-lucide="home"></i>
+      <span>首页</span>
+    </div>
+    <div class="nav-item" onclick="showPage('homework')">
+      <i data-lucide="book-open"></i>
+      <span>作业</span>
+    </div>
+    <div class="nav-item" onclick="showPage('students')">
+      <i data-lucide="users"></i>
+      <span>学生</span>
+    </div>
+    <div class="nav-item" onclick="showPage('ai-prepare')">
+      <i data-lucide="sparkles"></i>
+      <span>AI</span>
+    </div>
+  </nav>
+
+  <!-- 添加待办模态框 -->
+  <div class="modal-overlay" id="addTodoModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">新增待办</h3>
+        <button class="modal-close" onclick="closeModal('addTodoModal')">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">待办标题</label>
+        <input type="text" class="form-input" placeholder="请输入待办事项">
+      </div>
+      <div class="form-group">
+        <label class="form-label">类型</label>
+        <select class="form-input">
+          <option>提醒</option>
+          <option>常规</option>
+          <option>沟通</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">时间</label>
+        <input type="text" class="form-input" placeholder="如：明天 08:00">
+      </div>
+      <button class="btn-primary" onclick="closeModal('addTodoModal')">保存</button>
+    </div>
+  </div>
+
+  <script>
+    // 初始化图标
+    lucide.createIcons();
+
+    // 侧边栏切换
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    // 页面切换
+    function showPage(pageName) {
+      // 隐藏所有页面
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      // 显示目标页面
+      document.getElementById('page-' + pageName).classList.add('active');
+      // 更新菜单激活状态
+      document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      // 关闭侧边栏
+      toggleSidebar();
+      // 重新渲染图标
+      lucide.createIcons();
+    }
+
+    // 删除待办
+    function deleteTodo(btn) {
+      if (confirm('确定删除这条待办吗？')) {
+        btn.closest('.todo-item').remove();
+      }
+    }
+
+    // 打开添加待办模态框
+    function openAddTodo() {
+      document.getElementById('addTodoModal').classList.add('active');
+    }
+
+    // 关闭模态框
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // 导出数据
+    function exportData() {
+      alert('导出备份功能：将生成 JSON 文件下载');
+    }
+
+    // 导入数据
+    function importData() {
+      alert('导入备份功能：请选择 JSON 文件上传');
+    }
+
+    // 同步数据
+    function syncData() {
+      alert('数据同步中...');
+    }
+
+    // 登出
+    function logout() {
+      if (confirm('确定要返回登录吗？')) {
+        alert('已退出登录');
+      }
+    }
+
+    // 其他功能占位
+    function openAddStudent() { alert('添加学生功能'); }
+    function openAddHomework() { alert('添加作业功能'); }
+    function openAddDiscipline() { alert('添加违纪记录功能'); }
+    function openAddLeave() { alert('添加请假记录功能'); }
+    function openAddWorklog() { alert('添加工作留痕功能'); }
+    function openAddTalk() { alert('添加谈话记录功能'); }
+
+    // 点击模态框外部关闭
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

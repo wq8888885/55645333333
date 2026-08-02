@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>班级助手 - 违纪统计</title>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #FF8C69; --primary-light: #FFA88C;
+      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
+      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
+      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
+      --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
+      --radius: 16px; --radius-sm: 12px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
+    }
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 16px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2); border: none;
+      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .header-title { color: white; font-size: 18px; font-weight: 600; }
+    .add-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2); border: none;
+      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .content { padding: 16px; }
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+    }
+    .stat-box {
+      background: var(--bg-card); border-radius: var(--radius); padding: 14px;
+      text-align: center; box-shadow: var(--shadow);
+    }
+    .stat-num { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+    .stat-num.red { color: var(--error); }
+    .stat-num.orange { color: var(--warning); }
+    .stat-num.blue { color: var(--info); }
+    .stat-label { font-size: 11px; color: var(--text-muted); }
+    .discipline-card {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
+    }
+    .disc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .disc-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--error) 0%, #EF5350 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 16px; font-weight: 600;
+    }
+    .disc-info { flex: 1; }
+    .disc-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .disc-time { font-size: 12px; color: var(--text-muted); }
+    .disc-type {
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+      background: #FFEBEE; color: var(--error);
+    }
+    .desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+    .disc-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 10px; border-top: 1px solid var(--border);
+    }
+    .disc-action { font-size: 13px; color: var(--primary); cursor: pointer; font-weight: 500; }
+    .type-filter {
+      display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto;
+    }
+    .type-btn {
+      padding: 6px 14px; border: none; background: var(--bg-card);
+      border-radius: 16px; font-size: 12px; color: var(--text-secondary);
+      cursor: pointer; box-shadow: var(--shadow); white-space: nowrap;
+    }
+    .type-btn.active {
+      background: var(--error); color: white;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="history.back()">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <div class="header-title">违纪统计</div>
+    </div>
+    <button class="add-btn" onclick="addDiscipline()">
+      <i data-lucide="plus" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num red">3</div>
+        <div class="stat-label">本周违纪</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num orange">8</div>
+        <div class="stat-label">本月违纪</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num blue">2</div>
+        <div class="stat-label">待处理</div>
+      </div>
+    </div>
+
+    <div class="type-filter">
+      <button class="type-btn active">全部</button>
+      <button class="type-btn">迟到</button>
+      <button class="type-btn">旷课</button>
+      <button class="type-btn">作业</button>
+      <button class="type-btn">纪律</button>
+    </div>
+
+    <div class="discipline-card">
+      <div class="disc-header">
+        <div class="disc-avatar">刘</div>
+        <div class="disc-info">
+          <div class="disc-name">刘洋</div>
+          <div class="disc-time">今天 08:15</div>
+        </div>
+        <span class="disc-type">迟到</span>
+      </div>
+      <div class="desc">早读课迟到 15 分钟，已批评教育</div>
+      <div class="disc-footer">
+        <span style="font-size: 12px; color: var(--text-muted);">已处理</span>
+        <span class="disc-action">详情 ›</span>
+      </div>
+    </div>
+
+    <div class="discipline-card">
+      <div class="disc-header">
+        <div class="disc-avatar" style="background: linear-gradient(135deg, var(--warning) 0%, #FFA726 100%);">陈</div>
+        <div class="disc-info">
+          <div class="disc-name">陈静</div>
+          <div class="disc-time">昨天 14:30</div>
+        </div>
+        <span class="disc-type" style="background: #FFF3E0; color: var(--warning);">纪律</span>
+      </div>
+      <div class="desc">上课讲话，影响课堂秩序</div>
+      <div class="disc-footer">
+        <span style="font-size: 12px; color: var(--text-muted);">待处理</span>
+        <span class="disc-action">处理 ›</span>
+      </div>
+    </div>
+
+    <div class="discipline-card">
+      <div class="disc-header">
+        <div class="disc-avatar">杨</div>
+        <div class="disc-info">
+          <div class="disc-name">杨帆</div>
+          <div class="disc-time">2026-05-14</div>
+        </div>
+        <span class="disc-type" style="background: #FFF3E0; color: var(--warning);">作业</span>
+      </div>
+      <div class="desc">连续 3 天未交数学作业</div>
+      <div class="disc-footer">
+        <span style="font-size: 12px; color: var(--text-muted);">已通知家长</span>
+        <span class="disc-action">详情 ›</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    function addDiscipline() { alert('添加违纪记录功能'); }
+  </script>
+</body>
+</html>

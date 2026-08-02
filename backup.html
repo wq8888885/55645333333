@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>班级助手 - 备份管理</title>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #FF8C69; --primary-light: #FFA88C;
+      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
+      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
+      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
+      --info: #2196F3; --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
+      --radius: 16px; --radius-sm: 12px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
+    }
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 16px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2); border: none;
+      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .header-title { color: white; font-size: 18px; font-weight: 600; }
+    .content { padding: 16px; }
+    .backup-card {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+    }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .backup-info { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .info-item { text-align: center; }
+    .info-value { font-size: 18px; font-weight: 700; color: var(--primary); }
+    .info-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .btn-backup {
+      width: 100%; padding: 14px; border: none; border-radius: var(--radius);
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-export {
+      background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);
+      color: white; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+    .btn-import {
+      background: linear-gradient(135deg, var(--info) 0%, #42A5F5 100%);
+      color: white; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    }
+    .backup-list { margin-top: 16px; }
+    .backup-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px;
+      background: var(--bg-cream); border-radius: var(--radius-sm); margin-bottom: 8px;
+    }
+    .backup-icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bg-card); display: flex; align-items: center; justify-content: center;
+    }
+    .backup-details { flex: 1; }
+    .backup-name { font-size: 14px; font-weight: 500; }
+    .backup-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .backup-actions { display: flex; gap: 6px; }
+    .backup-btn {
+      padding: 6px 10px; border: none; background: var(--bg-card);
+      border-radius: 14px; font-size: 11px; color: var(--text-secondary); cursor: pointer;
+    }
+    .backup-btn.danger { color: var(--error); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="history.back()">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <div class="header-title">备份管理</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="backup-card">
+      <div class="card-title">
+        <i data-lucide="download" class="w-5 h-5" style="color: var(--success);"></i>
+        导出备份
+      </div>
+      <div class="backup-info">
+        <div class="info-item">
+          <div class="info-value">42</div>
+          <div class="info-label">学生数据</div>
+        </div>
+        <div class="info-item">
+          <div class="info-value">156</div>
+          <div class="info-label">作业记录</div>
+        </div>
+        <div class="info-item">
+          <div class="info-value">23</div>
+          <div class="info-label">违纪记录</div>
+        </div>
+        <div class="info-item">
+          <div class="info-value">8</div>
+          <div class="info-label">谈话记录</div>
+        </div>
+      </div>
+      <button class="btn-backup btn-export" onclick="exportBackup()">
+        <i data-lucide="download" class="w-5 h-5"></i>
+        导出所有数据
+      </button>
+    </div>
+
+    <div class="backup-card">
+      <div class="card-title">
+        <i data-lucide="upload" class="w-5 h-5" style="color: var(--info);"></i>
+        导入备份
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+        选择之前导出的备份文件，恢复所有数据
+      </p>
+      <button class="btn-backup btn-import" onclick="importBackup()">
+        <i data-lucide="upload" class="w-5 h-5"></i>
+        选择备份文件
+      </button>
+    </div>
+
+    <div class="backup-card">
+      <div class="card-title">
+        <i data-lucide="history" class="w-5 h-5" style="color: var(--primary);"></i>
+        备份历史
+      </div>
+      <div class="backup-list">
+        <div class="backup-item">
+          <div class="backup-icon">
+            <i data-lucide="file-archive" class="w-5 h-5" style="color: var(--success);"></i>
+          </div>
+          <div class="backup-details">
+            <div class="backup-name">完整备份_2026-06-15.json</div>
+            <div class="backup-meta">2.3 MB · 2026-06-15 14:30</div>
+          </div>
+          <div class="backup-actions">
+            <button class="backup-btn">恢复</button>
+            <button class="backup-btn danger">删除</button>
+          </div>
+        </div>
+        <div class="backup-item">
+          <div class="backup-icon">
+            <i data-lucide="file-archive" class="w-5 h-5" style="color: var(--success);"></i>
+          </div>
+          <div class="backup-details">
+            <div class="backup-name">完整备份_2026-06-01.json</div>
+            <div class="backup-meta">2.1 MB · 2026-06-01 09:15</div>
+          </div>
+          <div class="backup-actions">
+            <button class="backup-btn">恢复</button>
+            <button class="backup-btn danger">删除</button>
+          </div>
+        </div>
+        <div class="backup-item">
+          <div class="backup-icon">
+            <i data-lucide="file-archive" class="w-5 h-5" style="color: var(--success);"></i>
+          </div>
+          <div class="backup-details">
+            <div class="backup-name">完整备份_2026-05-15.json</div>
+            <div class="backup-meta">1.9 MB · 2026-05-15 16:45</div>
+          </div>
+          <div class="backup-actions">
+            <button class="backup-btn">恢复</button>
+            <button class="backup-btn danger">删除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    function exportBackup() { alert('导出备份功能：将数据保存为 JSON 文件'); }
+    function importBackup() { alert('导入备份功能：选择 JSON 文件恢复数据'); }
+  </script>
+</body>
+</html>

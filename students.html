@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>班级助手 - 学生管理</title>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #FF8C69;
+      --primary-light: #FFA88C;
+      --bg: #FFF8F0;
+      --bg-card: #FFFFFF;
+      --bg-cream: #FFF5EB;
+      --text-primary: #2D2D2D;
+      --text-secondary: #6B6B6B;
+      --text-muted: #999999;
+      --border: #FFE8D6;
+      --success: #4CAF50;
+      --warning: #FF9800;
+      --error: #F44336;
+      --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2); border: none;
+      color: white; display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .header-title { color: white; font-size: 18px; font-weight: 600; }
+    .add-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2); border: none;
+      color: white; display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .content { padding: 16px; }
+    .search-bar {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .search-input {
+      flex: 1; padding: 12px 16px; border: none;
+      background: var(--bg-card); border-radius: var(--radius);
+      font-size: 14px; box-shadow: var(--shadow);
+    }
+    .filter-btn {
+      padding: 12px 16px; border: none;
+      background: var(--bg-card); border-radius: var(--radius);
+      color: var(--text-secondary); cursor: pointer; box-shadow: var(--shadow);
+    }
+    .student-card {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
+    }
+    .student-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .student-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 18px; font-weight: 600;
+    }
+    .student-info { flex: 1; }
+    .student-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .student-id { font-size: 12px; color: var(--text-muted); }
+    .student-status {
+      padding: 4px 10px; border-radius: 12px;
+      font-size: 11px; font-weight: 600;
+    }
+    .status-normal { background: #E8F5E9; color: var(--success); }
+    .status-warning { background: #FFF3E0; color: var(--warning); }
+    .student-details {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 8px; padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .detail-item { font-size: 12px; color: var(--text-secondary); }
+    .detail-label { color: var(--text-muted); margin-bottom: 2px; }
+    .student-actions {
+      display: flex; gap: 8px; margin-top: 12px;
+    }
+    .action-btn {
+      flex: 1; padding: 8px; border: none;
+      background: var(--bg-cream); border-radius: var(--radius-sm);
+      font-size: 12px; color: var(--text-secondary); cursor: pointer;
+    }
+    .action-btn.primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="history.back()">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <div class="header-title">学生管理</div>
+    </div>
+    <button class="add-btn" onclick="addStudent()">
+      <i data-lucide="plus" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <div class="content">
+    <div class="search-bar">
+      <input type="text" class="search-input" placeholder="搜索学生姓名或学号...">
+      <button class="filter-btn">
+        <i data-lucide="filter" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="student-card">
+      <div class="student-header">
+        <div class="student-avatar">张</div>
+        <div class="student-info">
+          <div class="student-name">张小明</div>
+          <div class="student-id">学号：001</div>
+        </div>
+        <span class="student-status status-normal">正常</span>
+      </div>
+      <div class="student-details">
+        <div class="detail-item">
+          <div class="detail-label">座位</div>
+          <div>第 1 排第 2 列</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">家长电话</div>
+          <div>138****1234</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">最近成绩</div>
+          <div>92 分</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">作业提交</div>
+          <div>98%</div>
+        </div>
+      </div>
+      <div class="student-actions">
+        <button class="action-btn">编辑</button>
+        <button class="action-btn">谈话</button>
+        <button class="action-btn primary">查看详情</button>
+      </div>
+    </div>
+
+    <div class="student-card">
+      <div class="student-header">
+        <div class="student-avatar">李</div>
+        <div class="student-info">
+          <div class="student-name">李华</div>
+          <div class="student-id">学号：002</div>
+        </div>
+        <span class="student-status status-normal">正常</span>
+      </div>
+      <div class="student-details">
+        <div class="detail-item">
+          <div class="detail-label">座位</div>
+          <div>第 1 排第 3 列</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">家长电话</div>
+          <div>139****5678</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">最近成绩</div>
+          <div>88 分</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">作业提交</div>
+          <div>95%</div>
+        </div>
+      </div>
+      <div class="student-actions">
+        <button class="action-btn">编辑</button>
+        <button class="action-btn">谈话</button>
+        <button class="action-btn primary">查看详情</button>
+      </div>
+    </div>
+
+    <div class="student-card">
+      <div class="student-header">
+        <div class="student-avatar" style="background: linear-gradient(135deg, #FF9800 0%, #FFA726 100%);">王</div>
+        <div class="student-info">
+          <div class="student-name">王芳</div>
+          <div class="student-id">学号：003</div>
+        </div>
+        <span class="student-status status-warning">关注</span>
+      </div>
+      <div class="student-details">
+        <div class="detail-item">
+          <div class="detail-label">座位</div>
+          <div>第 2 排第 1 列</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">家长电话</div>
+          <div>137****9012</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">最近成绩</div>
+          <div>76 分</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">作业提交</div>
+          <div>82%</div>
+        </div>
+      </div>
+      <div class="student-actions">
+        <button class="action-btn">编辑</button>
+        <button class="action-btn">谈话</button>
+        <button class="action-btn primary">查看详情</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    function addStudent() { alert('添加学生功能'); }
+  </script>
+</body>
+</html>

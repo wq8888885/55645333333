@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>班级助手 - 成绩分析</title>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #FF8C69; --primary-light: #FFA88C;
+      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
+      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
+      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
+      --info: #2196F3; --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
+      --radius: 16px; --radius-sm: 12px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
+    }
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 16px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2); border: none;
+      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .header-title { color: white; font-size: 18px; font-weight: 600; }
+    .content { padding: 16px; }
+    .exam-selector {
+      display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto;
+    }
+    .exam-btn {
+      padding: 8px 16px; border: none; background: var(--bg-card);
+      border-radius: 20px; font-size: 13px; color: var(--text-secondary);
+      cursor: pointer; box-shadow: var(--shadow); white-space: nowrap;
+    }
+    .exam-btn.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+    }
+    .overview-cards {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;
+    }
+    .overview-card {
+      background: var(--bg-card); border-radius: var(--radius); padding: 14px; box-shadow: var(--shadow);
+    }
+    .overview-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+    .overview-value { font-size: 22px; font-weight: 700; }
+    .overview-value.high { color: var(--success); }
+    .overview-value.mid { color: var(--warning); }
+    .overview-value.low { color: var(--error); }
+    .overview-trend { font-size: 11px; margin-top: 4px; }
+    .trend-up { color: var(--success); }
+    .trend-down { color: var(--error); }
+    .chart-card {
+      background: var(--bg-card); border-radius: var(--radius); padding: 16px;
+      margin-bottom: 12px; box-shadow: var(--shadow);
+    }
+    .chart-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+    .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bar {
+      width: 100%; border-radius: 6px 6px 0 0;
+      background: linear-gradient(180deg, var(--primary) 0%, var(--primary-light) 100%);
+      transition: height 0.3s;
+    }
+    .bar-label { font-size: 10px; color: var(--text-muted); }
+    .bar-value { font-size: 11px; font-weight: 600; }
+    .student-rank-list { margin-top: 12px; }
+    .rank-item {
+      display: flex; align-items: center; gap: 12px; padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: white;
+    }
+    .rank-1 { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+    .rank-2 { background: linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%); }
+    .rank-3 { background: linear-gradient(135deg, #CD7F32 0%, #A0522D 100%); }
+    .rank-other { background: var(--text-muted); }
+    .rank-name { flex: 1; font-size: 14px; font-weight: 500; }
+    .rank-score { font-size: 14px; font-weight: 700; color: var(--primary); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="history.back()">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <div class="header-title">成绩分析</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="exam-selector">
+      <button class="exam-btn active">本月月考</button>
+      <button class="exam-btn">期中考试</button>
+      <button class="exam-btn">上月月考</button>
+      <button class="exam-btn">单元测试</button>
+    </div>
+
+    <div class="overview-cards">
+      <div class="overview-card">
+        <div class="overview-label">平均分</div>
+        <div class="overview-value high">88.7</div>
+        <div class="overview-trend trend-up">↑ 2.3 分</div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-label">最高分</div>
+        <div class="overview-value high">98</div>
+        <div class="overview-trend">张小明</div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-label">及格率</div>
+        <div class="overview-value mid">92.8%</div>
+        <div class="overview-trend trend-up">↑ 1.5%</div>
+      </div>
+      <div class="overview-card">
+        <div class="overview-label">优秀率</div>
+        <div class="overview-value low">35.7%</div>
+        <div class="overview-trend trend-down">↓ 0.8%</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">各科平均分</div>
+      <div class="bar-chart">
+        <div class="bar-item">
+          <div class="bar-value">92</div>
+          <div class="bar" style="height: 92px;"></div>
+          <div class="bar-label">语文</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-value">88</div>
+          <div class="bar" style="height: 88px;"></div>
+          <div class="bar-label">数学</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-value">85</div>
+          <div class="bar" style="height: 85px;"></div>
+          <div class="bar-label">英语</div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-value">90</div>
+          <div class="bar" style="height: 90px;"></div>
+          <div class="bar-label">科学</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">成绩排名 TOP 5</div>
+      <div class="student-rank-list">
+        <div class="rank-item">
+          <div class="rank-num rank-1">1</div>
+          <div class="rank-name">张小明</div>
+          <div class="rank-score">98 分</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-num rank-2">2</div>
+          <div class="rank-name">李华</div>
+          <div class="rank-score">95 分</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-num rank-3">3</div>
+          <div class="rank-name">赵强</div>
+          <div class="rank-score">93 分</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-num rank-other">4</div>
+          <div class="rank-name">陈静</div>
+          <div class="rank-score">91 分</div>
+        </div>
+        <div class="rank-item">
+          <div class="rank-num rank-other">5</div>
+          <div class="rank-name">杨帆</div>
+          <div class="rank-score">90 分</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>

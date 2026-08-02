@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>班级助手 - 智能备课</title>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #FF8C69; --primary-light: #FFA88C;
+      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
+      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
+      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
+      --info: #2196F3; --purple: #9C27B0;
+      --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
+      --radius: 16px; --radius-sm: 12px;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
+    }
+    .header {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      padding: 16px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2); border: none;
+      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .header-title { color: white; font-size: 18px; font-weight: 600; }
+    .content { padding: 16px; }
+    .ai-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+      color: white;
+    }
+    .ai-banner-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .ai-banner-desc { font-size: 13px; opacity: 0.9; }
+    .input-section {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow);
+    }
+    .section-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-secondary); }
+    .form-input {
+      width: 100%; padding: 12px 14px; border: none;
+      background: var(--bg-cream); border-radius: var(--radius-sm);
+      font-size: 14px; color: var(--text-primary);
+    }
+    .form-input:focus { outline: none; box-shadow: 0 0 0 2px var(--primary); }
+    .form-textarea { min-height: 80px; resize: vertical; }
+    .btn-generate {
+      width: 100%; padding: 14px; border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+      cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-generate:hover { transform: translateY(-1px); }
+    .result-section {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 20px; box-shadow: var(--shadow);
+    }
+    .result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .result-title { font-size: 15px; font-weight: 600; }
+    .result-actions { display: flex; gap: 8px; }
+    .result-btn {
+      padding: 6px 12px; border: none; background: var(--bg-cream);
+      border-radius: 16px; font-size: 12px; color: var(--text-secondary); cursor: pointer;
+    }
+    .result-content { font-size: 14px; line-height: 1.8; color: var(--text-secondary); }
+    .result-content h4 { color: var(--text-primary); margin: 12px 0 6px; font-size: 14px; }
+    .result-content ul { padding-left: 20px; margin: 6px 0; }
+    .result-content li { margin: 4px 0; }
+    .placeholder {
+      text-align: center; padding: 40px 20px; color: var(--text-muted);
+    }
+    .placeholder i { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.3; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="history.back()">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+      <div class="header-title">智能备课</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="ai-banner">
+      <div class="ai-banner-title">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+        AI 备课助手
+      </div>
+      <div class="ai-banner-desc">输入课题信息，AI 帮您生成完整教案框架</div>
+    </div>
+
+    <div class="input-section">
+      <div class="section-title">课题信息</div>
+      <div class="form-group">
+        <label class="form-label">学科</label>
+        <select class="form-input">
+          <option>数学</option>
+          <option>语文</option>
+          <option>英语</option>
+          <option>科学</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">课题名称</label>
+        <input type="text" class="form-input" placeholder="如：分数的初步认识">
+      </div>
+      <div class="form-group">
+        <label class="form-label">年级班级</label>
+        <input type="text" class="form-input" value="三年级（2）班" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">课时安排</label>
+        <select class="form-input">
+          <option>1 课时（40 分钟）</option>
+          <option>2 课时（80 分钟）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">特殊要求（可选）</label>
+        <textarea class="form-input form-textarea" placeholder="如：需要包含小组活动、多媒体教学等"></textarea>
+      </div>
+      <button class="btn-generate" onclick="generateLesson()">
+        <i data-lucide="sparkles" class="w-5 h-5"></i>
+        开始生成教案
+      </button>
+    </div>
+
+    <div class="result-section">
+      <div class="result-header">
+        <div class="result-title">生成结果</div>
+        <div class="result-actions">
+          <button class="result-btn">复制</button>
+          <button class="result-btn">导出</button>
+        </div>
+      </div>
+      <div class="placeholder">
+        <i data-lucide="file-text" class="w-12 h-12"></i>
+        <p>填写课题信息后点击"开始生成教案"</p>
+        <p style="font-size: 12px; margin-top: 4px;">AI 将为您生成完整的教学方案</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+    function generateLesson() {
+      alert('AI 教案生成功能：需要接入大模型 API');
+    }
+  </script>
+</body>
+</html>
