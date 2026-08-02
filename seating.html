@@ -2,192 +2,196 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 排座位</title>
-  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>排座位 - 班级助手</title>
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #FF8C69; --primary-light: #FFA88C;
-      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
-      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
-      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
-      --info: #2196F3; --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
-      --radius: 16px; --radius-sm: 12px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
-    }
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px; display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .header-title { color: white; font-size: 18px; font-weight: 600; }
-    .header-actions { display: flex; gap: 8px; }
-    .header-btn {
-      padding: 8px 14px; border: none; border-radius: 20px;
-      background: rgba(255, 255, 255, 0.2); color: white;
-      font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px;
-    }
-    .content { padding: 16px; }
-    .seating-info {
-      background: var(--bg-card); border-radius: var(--radius);
-      padding: 14px; margin-bottom: 16px; box-shadow: var(--shadow);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .info-item { text-align: center; }
-    .info-value { font-size: 18px; font-weight: 700; color: var(--primary); }
-    .info-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-    .seating-grid {
-      background: var(--bg-card); border-radius: var(--radius);
-      padding: 16px; box-shadow: var(--shadow);
-    }
-    .grid-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; text-align: center; }
-    .desk-row { display: flex; gap: 8px; margin-bottom: 8px; justify-content: center; }
-    .desk {
-      width: 60px; height: 50px; border-radius: var(--radius-sm);
-      background: var(--bg-cream); border: 2px solid var(--border);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .desk:hover { border-color: var(--primary); transform: scale(1.05); }
-    .desk-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
-    .desk-num { font-size: 10px; color: var(--text-muted); }
-    .desk.empty { background: transparent; border-style: dashed; }
-    .aisle { width: 20px; }
-    .legend {
-      display: flex; gap: 16px; margin-top: 16px; justify-content: center;
-    }
-    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
-    .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .legend-dot.normal { background: var(--success); }
-    .legend-dot.warning { background: var(--warning); }
-    .legend-dot.error { background: var(--error); }
+    .seating-container { background: white; border-radius: 12px; padding: 16px; }
+    .seating-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 16px; }
+    .seat { aspect-ratio: 1; border: 2px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .seat.occupied { background: var(--primary-light); border-color: var(--primary-color); color: var(--primary-color); }
+    .seat.empty { background: var(--bg-color); }
+    .seat:hover { transform: scale(1.05); }
+    .seating-info { text-align: center; color: var(--text-secondary); font-size: 14px; margin-top: 16px; }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <button class="back-btn" onclick="history.back()">
-        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-      </button>
-      <div class="header-title">排座位</div>
-    </div>
-    <div class="header-actions">
-      <button class="header-btn">
-        <i data-lucide="shuffle" class="w-4 h-4"></i>
-        自动排座
-      </button>
-      <button class="header-btn">
-        <i data-lucide="save" class="w-4 h-4"></i>
-        保存
-      </button>
-    </div>
-  </header>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="app-title">排座位</h1>
+        </div>
+        <div class="header-right">
+          <button class="header-btn" onclick="autoArrange()">自动排座</button>
+        </div>
+      </div>
+    </header>
 
-  <div class="content">
-    <div class="seating-info">
-      <div class="info-item">
-        <div class="info-value">42</div>
-        <div class="info-label">总人数</div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>班级助手</h2>
+        <p class="subtitle">绿茵校园·智慧班级</p>
       </div>
-      <div class="info-item">
-        <div class="info-value">7×6</div>
-        <div class="info-label">座位布局</div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">主功能</div>
+          <a href="index.html" class="nav-item"><span class="nav-icon"></span><span>主页信息</span></a>
+          <a href="students.html" class="nav-item"><span class="nav-icon">👨‍🎓</span><span>学生管理</span></a>
+          <a href="grades.html" class="nav-item"><span class="nav-icon">📈</span><span>成绩分析</span></a>
+          <a href="discipline.html" class="nav-item"><span class="nav-icon">⚖️</span><span>违纪统计</span></a>
+          <a href="homework.html" class="nav-item"><span class="nav-icon">📚</span><span>作业管理</span></a>
+          <a href="leave.html" class="nav-item"><span class="nav-icon">🗓️</span><span>请销假</span></a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">教学记录</div>
+          <a href="worklog.html" class="nav-item"><span class="nav-icon">📝</span><span>工作留痕</span></a>
+          <a href="talks.html" class="nav-item"><span class="nav-icon">💬</span><span>谈话记录</span></a>
+          <a href="seating.html" class="nav-item active"><span class="nav-icon">🪑</span><span>排座位</span></a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">AI 助手</div>
+          <a href="ai-prepare.html" class="nav-item"><span class="nav-icon">🤖</span><span>智能备课</span></a>
+          <a href="ai-analysis.html" class="nav-item"><span class="nav-icon">📊</span><span>学情分析</span></a>
+          <a href="ai-comment.html" class="nav-item"><span class="nav-icon">✍️</span><span>评语生成</span></a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="teacher-info">
+          <div class="teacher-avatar" id="teacherAvatar">李</div>
+          <div>
+            <div class="teacher-name" id="teacherName">李老师</div>
+            <div class="teacher-role" id="teacherRole">班主任</div>
+          </div>
+        </div>
       </div>
-      <div class="info-item">
-        <div class="info-value">3</div>
-        <div class="info-label">过道数</div>
-      </div>
-    </div>
+    </aside>
 
-    <div class="seating-grid">
-      <div class="grid-title">讲台</div>
-      <div style="text-align: center; margin-bottom: 16px; font-size: 12px; color: var(--text-muted);">▼</div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-      <div class="desk-row">
-        <div class="desk"><div class="desk-name">张小明</div><div class="desk-num">1-1</div></div>
-        <div class="desk"><div class="desk-name">李华</div><div class="desk-num">1-2</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">王芳</div><div class="desk-num">1-3</div></div>
-        <div class="desk"><div class="desk-name">赵强</div><div class="desk-num">1-4</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">刘洋</div><div class="desk-num">1-5</div></div>
-        <div class="desk"><div class="desk-name">陈静</div><div class="desk-num">1-6</div></div>
+    <main class="main-content">
+      <div class="seating-container">
+        <h3>座位表</h3>
+        <div class="seating-grid" id="seatingGrid"></div>
+        <div class="seating-info" id="seatingInfo"></div>
       </div>
-
-      <div class="desk-row">
-        <div class="desk"><div class="desk-name">杨帆</div><div class="desk-num">2-1</div></div>
-        <div class="desk"><div class="desk-name">孙丽</div><div class="desk-num">2-2</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">周杰</div><div class="desk-num">2-3</div></div>
-        <div class="desk"><div class="desk-name">吴敏</div><div class="desk-num">2-4</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">郑浩</div><div class="desk-num">2-5</div></div>
-        <div class="desk"><div class="desk-name">冯婷</div><div class="desk-num">2-6</div></div>
-      </div>
-
-      <div class="desk-row">
-        <div class="desk"><div class="desk-name">褚健</div><div class="desk-num">3-1</div></div>
-        <div class="desk"><div class="desk-name">卫兰</div><div class="desk-num">3-2</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">蒋伟</div><div class="desk-num">3-3</div></div>
-        <div class="desk"><div class="desk-name">沈芳</div><div class="desk-num">3-4</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">韩磊</div><div class="desk-num">3-5</div></div>
-        <div class="desk"><div class="desk-name">唐娜</div><div class="desk-num">3-6</div></div>
-      </div>
-
-      <div class="desk-row">
-        <div class="desk"><div class="desk-name">冯杰</div><div class="desk-num">4-1</div></div>
-        <div class="desk"><div class="desk-name">董敏</div><div class="desk-num">4-2</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">程浩</div><div class="desk-num">4-3</div></div>
-        <div class="desk"><div class="desk-name">曹婷</div><div class="desk-num">4-4</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">袁健</div><div class="desk-num">4-5</div></div>
-        <div class="desk"><div class="desk-name">邓兰</div><div class="desk-num">4-6</div></div>
-      </div>
-
-      <div class="desk-row">
-        <div class="desk"><div class="desk-name">许伟</div><div class="desk-num">5-1</div></div>
-        <div class="desk"><div class="desk-name">傅芳</div><div class="desk-num">5-2</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">苏磊</div><div class="desk-num">5-3</div></div>
-        <div class="desk"><div class="desk-name">卢娜</div><div class="desk-num">5-4</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">蒋强</div><div class="desk-num">5-5</div></div>
-        <div class="desk"><div class="desk-name">蔡敏</div><div class="desk-num">5-6</div></div>
-      </div>
-
-      <div class="desk-row">
-        <div class="desk"><div class="desk-name">贾伟</div><div class="desk-num">6-1</div></div>
-        <div class="desk"><div class="desk-name">魏芳</div><div class="desk-num">6-2</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">薛磊</div><div class="desk-num">6-3</div></div>
-        <div class="desk"><div class="desk-name">叶娜</div><div class="desk-num">6-4</div></div>
-        <div class="aisle"></div>
-        <div class="desk"><div class="desk-name">阎强</div><div class="desk-num">6-5</div></div>
-        <div class="desk"><div class="desk-name">余敏</div><div class="desk-num">6-6</div></div>
-      </div>
-
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot normal"></div>正常</div>
-        <div class="legend-item"><div class="legend-dot warning"></div>关注</div>
-        <div class="legend-item"><div class="legend-dot error"></div>特殊</div>
-      </div>
-    </div>
+    </main>
   </div>
 
-  <script>lucide.createIcons();</script>
+  <script src="js/data.js"></script>
+  <script>
+    if (!classData.className || !classData.teacherName) {
+      window.location.href = 'setup.html';
+    }
+
+    function updatePage() {
+      document.getElementById('teacherName').textContent = (classData.teacherName || '老师') + '老师';
+      document.getElementById('teacherRole').textContent = classData.className || '班主任';
+      document.getElementById('teacherAvatar').textContent = (classData.teacherName || '老')[0];
+      renderSeating();
+    }
+
+    function renderSeating() {
+      const grid = document.getElementById('seatingGrid');
+      const info = document.getElementById('seatingInfo');
+      
+      if (classData.students.length === 0) {
+        grid.innerHTML = '<div class="empty-state">请先添加学生</div>';
+        info.textContent = '';
+        return;
+      }
+
+      const seats = classData.seating || [];
+      const totalSeats = 42; // 默认 6x7 座位
+      
+      grid.innerHTML = '';
+      for (let i = 0; i < totalSeats; i++) {
+        const seat = document.createElement('div');
+        seat.className = 'seat';
+        
+        if (seats[i]) {
+          const student = classData.students.find(s => s.id === seats[i]);
+          if (student) {
+            seat.classList.add('occupied');
+            seat.textContent = student.name;
+            seat.onclick = () => clearSeat(i);
+          }
+        } else {
+          seat.classList.add('empty');
+          seat.textContent = '空';
+          seat.onclick = () => assignSeat(i);
+        }
+        
+        grid.appendChild(seat);
+      }
+      
+      info.textContent = `已安排 ${seats.filter(s => s).length} / ${totalSeats} 个座位`;
+    }
+
+    function assignSeat(seatIndex) {
+      const availableStudents = classData.students.filter(s => 
+        !classData.seating.includes(s.id)
+      );
+      
+      if (availableStudents.length === 0) {
+        alert('所有学生都已安排座位');
+        return;
+      }
+      
+      const studentId = parseInt(prompt('输入学生 ID：'));
+      const student = classData.students.find(s => s.id === studentId);
+      
+      if (!student) {
+        alert('学生不存在');
+        return;
+      }
+      
+      if (classData.seating.includes(studentId)) {
+        alert('该学生已有座位');
+        return;
+      }
+      
+      if (!classData.seating) classData.seating = [];
+      classData.seating[seatIndex] = studentId;
+      saveData();
+      renderSeating();
+    }
+
+    function clearSeat(seatIndex) {
+      if (confirm('清空这个座位？')) {
+        classData.seating[seatIndex] = null;
+        saveData();
+        renderSeating();
+      }
+    }
+
+    function autoArrange() {
+      if (classData.students.length === 0) {
+        alert('请先添加学生');
+        return;
+      }
+      
+      if (!confirm('自动排列所有学生座位？')) return;
+      
+      const shuffled = [...classData.students].sort(() => Math.random() - 0.5);
+      classData.seating = shuffled.map(s => s.id);
+      saveData();
+      renderSeating();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    updatePage();
+  </script>
 </body>
 </html>

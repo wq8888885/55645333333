@@ -2,166 +2,143 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 工作留痕</title>
-  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作留痕 - 班级助手</title>
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #FF8C69; --primary-light: #FFA88C;
-      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
-      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
-      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
-      --info: #2196F3; --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
-      --radius: 16px; --radius-sm: 12px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
-    }
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px; display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .header-title { color: white; font-size: 18px; font-weight: 600; }
-    .add-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .content { padding: 16px; }
-    .worklog-card {
-      background: var(--bg-card); border-radius: var(--radius);
-      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
-    }
-    .worklog-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .worklog-icon {
-      width: 40px; height: 40px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .worklog-icon.meeting { background: #E3F2FD; color: var(--info); }
-    .worklog-icon.activity { background: #E8F5E9; color: var(--success); }
-    .worklog-icon.parent { background: #FFF3E0; color: var(--warning); }
-    .worklog-title { font-size: 15px; font-weight: 600; flex: 1; }
-    .worklog-time { font-size: 12px; color: var(--text-muted); }
-    .worklog-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.5; }
-    .worklog-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-    .tag {
-      padding: 3px 8px; border-radius: 10px; font-size: 11px;
-      background: var(--bg-cream); color: var(--text-secondary);
-    }
-    .worklog-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-top: 10px; border-top: 1px solid var(--border);
-    }
-    .worklog-meta { display: flex; gap: 12px; font-size: 12px; color: var(--text-muted); }
-    .worklog-action { font-size: 13px; color: var(--primary); cursor: pointer; font-weight: 500; }
+    .worklog-list { background: white; border-radius: 12px; padding: 16px; }
+    .worklog-item { padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+    .worklog-item:last-child { border-bottom: none; }
+    .worklog-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .worklog-title { font-weight: 600; color: var(--text-primary); }
+    .worklog-date { font-size: 14px; color: var(--text-secondary); }
+    .worklog-content { font-size: 14px; color: var(--text-primary); line-height: 1.6; margin-bottom: 8px; }
+    .worklog-tag { display: inline-block; padding: 2px 8px; background: var(--primary-color); color: white; border-radius: 4px; font-size: 12px; }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <button class="back-btn" onclick="history.back()">
-        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-      </button>
-      <div class="header-title">工作留痕</div>
-    </div>
-    <button class="add-btn" onclick="addWorklog()">
-      <i data-lucide="plus" class="w-5 h-5"></i>
-    </button>
-  </header>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="app-title">工作留痕</h1>
+        </div>
+        <div class="header-right">
+          <button class="header-btn" onclick="addWorklog()">+ 新增</button>
+        </div>
+      </div>
+    </header>
 
-  <div class="content">
-    <div class="worklog-card">
-      <div class="worklog-header">
-        <div class="worklog-icon meeting">
-          <i data-lucide="users" class="w-5 h-5"></i>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>班级助手</h2>
+        <p class="subtitle">绿茵校园·智慧班级</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">主功能</div>
+          <a href="index.html" class="nav-item"><span class="nav-icon"></span><span>主页信息</span></a>
+          <a href="students.html" class="nav-item"><span class="nav-icon">‍🎓</span><span>学生管理</span></a>
+          <a href="grades.html" class="nav-item"><span class="nav-icon">📈</span><span>成绩分析</span></a>
+          <a href="discipline.html" class="nav-item"><span class="nav-icon">⚖️</span><span>违纪统计</span></a>
+          <a href="homework.html" class="nav-item"><span class="nav-icon">📚</span><span>作业管理</span></a>
+          <a href="leave.html" class="nav-item"><span class="nav-icon">🗓️</span><span>请销假</span></a>
         </div>
-        <div class="worklog-title">班会课 - 安全教育</div>
-        <div class="worklog-time">今天 14:00</div>
-      </div>
-      <div class="worklog-desc">
-        开展"交通安全"主题班会，通过案例分析让学生了解交通规则的重要性。学生参与度高，讨论积极。
-      </div>
-      <div class="worklog-tags">
-        <span class="tag">班会</span>
-        <span class="tag">安全教育</span>
-        <span class="tag">三年级 2 班</span>
-      </div>
-      <div class="worklog-footer">
-        <div class="worklog-meta">
-          <span>42 人参加</span>
-          <span>·</span>
-          <span>已归档</span>
+        <div class="nav-section">
+          <div class="nav-title">教学记录</div>
+          <a href="worklog.html" class="nav-item active"><span class="nav-icon">📝</span><span>工作留痕</span></a>
+          <a href="talks.html" class="nav-item"><span class="nav-icon">💬</span><span>谈话记录</span></a>
+          <a href="seating.html" class="nav-item"><span class="nav-icon">🪑</span><span>排座位</span></a>
         </div>
-        <span class="worklog-action">编辑 ›</span>
+        <div class="nav-section">
+          <div class="nav-title">AI 助手</div>
+          <a href="ai-prepare.html" class="nav-item"><span class="nav-icon">🤖</span><span>智能备课</span></a>
+          <a href="ai-analysis.html" class="nav-item"><span class="nav-icon">📊</span><span>学情分析</span></a>
+          <a href="ai-comment.html" class="nav-item"><span class="nav-icon">✍️</span><span>评语生成</span></a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="teacher-info">
+          <div class="teacher-avatar" id="teacherAvatar">李</div>
+          <div>
+            <div class="teacher-name" id="teacherName">李老师</div>
+            <div class="teacher-role" id="teacherRole">班主任</div>
+          </div>
+        </div>
       </div>
-    </div>
+    </aside>
 
-    <div class="worklog-card">
-      <div class="worklog-header">
-        <div class="worklog-icon activity">
-          <i data-lucide="trophy" class="w-5 h-5"></i>
-        </div>
-        <div class="worklog-title">运动会组织</div>
-        <div class="worklog-time">2026-05-10</div>
-      </div>
-      <div class="worklog-desc">
-        组织班级参加学校春季运动会，获得团体总分第二名。表扬张小明、李华等同学在比赛中的突出表现。
-      </div>
-      <div class="worklog-tags">
-        <span class="tag">活动</span>
-        <span class="tag">运动会</span>
-        <span class="tag">获奖</span>
-      </div>
-      <div class="worklog-footer">
-        <div class="worklog-meta">
-          <span>42 人参加</span>
-          <span>·</span>
-          <span>已归档</span>
-        </div>
-        <span class="worklog-action">编辑 ›</span>
-      </div>
-    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <div class="worklog-card">
-      <div class="worklog-header">
-        <div class="worklog-icon parent">
-          <i data-lucide="phone" class="w-5 h-5"></i>
-        </div>
-        <div class="worklog-title">家长沟通 - 王芳家长</div>
-        <div class="worklog-time">2026-05-08</div>
+    <main class="main-content">
+      <div class="worklog-list" id="worklogList">
+        <div class="empty-state">暂无工作记录</div>
       </div>
-      <div class="worklog-desc">
-        与王芳妈妈电话沟通，反馈近期学习成绩下滑情况。家长表示会加强监督，配合老师工作。约定下周面谈。
-      </div>
-      <div class="worklog-tags">
-        <span class="tag">家长沟通</span>
-        <span class="tag">电话</span>
-        <span class="tag">待跟进</span>
-      </div>
-      <div class="worklog-footer">
-        <div class="worklog-meta">
-          <span>已记录</span>
-          <span>·</span>
-          <span>待跟进</span>
-        </div>
-        <span class="worklog-action">编辑 ›</span>
-      </div>
-    </div>
+    </main>
   </div>
 
+  <script src="js/data.js"></script>
   <script>
-    lucide.createIcons();
-    function addWorklog() { alert('添加工作留痕功能'); }
+    if (!classData.className || !classData.teacherName) {
+      window.location.href = 'setup.html';
+    }
+
+    function updatePage() {
+      document.getElementById('teacherName').textContent = (classData.teacherName || '老师') + '老师';
+      document.getElementById('teacherRole').textContent = classData.className || '班主任';
+      document.getElementById('teacherAvatar').textContent = (classData.teacherName || '老')[0];
+      renderWorklogs();
+    }
+
+    function renderWorklogs() {
+      const list = document.getElementById('worklogList');
+      if (classData.worklogs.length === 0) {
+        list.innerHTML = '<div class="empty-state">暂无工作记录</div>';
+        return;
+      }
+      list.innerHTML = classData.worklogs.map(w => `
+        <div class="worklog-item">
+          <div class="worklog-header">
+            <div class="worklog-title">${w.title}</div>
+            <div class="worklog-date">${w.date}</div>
+          </div>
+          <div class="worklog-content">${w.content}</div>
+          <span class="worklog-tag">${w.category}</span>
+        </div>
+      `).join('');
+    }
+
+    function addWorklog() {
+      const title = prompt('工作标题：');
+      if (!title) return;
+      const category = prompt('分类（教学/管理/会议/其他）：', '教学');
+      const content = prompt('工作内容：');
+      if (!content) return;
+      
+      classData.worklogs.push({
+        id: Date.now(),
+        title,
+        category,
+        content,
+        date: new Date().toISOString().split('T')[0]
+      });
+      saveData();
+      renderWorklogs();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    updatePage();
   </script>
 </body>
 </html>

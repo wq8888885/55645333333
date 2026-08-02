@@ -2,159 +2,154 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>班级助手 - 谈话记录</title>
-  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>谈话记录 - 班级助手</title>
+  <link rel="stylesheet" href="css/style.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --primary: #FF8C69; --primary-light: #FFA88C;
-      --bg: #FFF8F0; --bg-card: #FFFFFF; --bg-cream: #FFF5EB;
-      --text-primary: #2D2D2D; --text-secondary: #6B6B6B; --text-muted: #999999;
-      --border: #FFE8D6; --success: #4CAF50; --warning: #FF9800; --error: #F44336;
-      --info: #2196F3; --shadow: 0 2px 12px rgba(255, 140, 105, 0.08);
-      --radius: 16px; --radius-sm: 12px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg); color: var(--text-primary); min-height: 100vh; padding-bottom: 80px;
-    }
-    .header {
-      position: sticky; top: 0; z-index: 100;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-      padding: 16px; display: flex; align-items: center; justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(255, 140, 105, 0.2);
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .header-title { color: white; font-size: 18px; font-weight: 600; }
-    .add-btn {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2); border: none;
-      color: white; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    }
-    .content { padding: 16px; }
-    .talk-card {
-      background: var(--bg-card); border-radius: var(--radius);
-      padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow);
-    }
-    .talk-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .talk-avatar {
-      width: 44px; height: 44px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 16px; font-weight: 600;
-    }
-    .talk-info { flex: 1; }
-    .talk-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-    .talk-time { font-size: 12px; color: var(--text-muted); }
-    .talk-type {
-      padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
-    }
-    .type-encourage { background: #E8F5E9; color: var(--success); }
-    .type-discipline { background: #FFEBEE; color: var(--error); }
-    .type-care { background: #E3F2FD; color: var(--info); }
-    .talk-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.5; }
-    .talk-result {
-      background: var(--bg-cream); border-radius: var(--radius-sm);
-      padding: 10px; margin-bottom: 10px;
-    }
-    .result-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
-    .result-text { font-size: 12px; color: var(--text-secondary); }
-    .talk-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-top: 10px; border-top: 1px solid var(--border);
-    }
-    .talk-action { font-size: 13px; color: var(--primary); cursor: pointer; font-weight: 500; }
+    .talk-list { background: white; border-radius: 12px; padding: 16px; }
+    .talk-item { padding: 16px 0; border-bottom: 1px solid var(--border-color); }
+    .talk-item:last-child { border-bottom: none; }
+    .talk-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .talk-student { font-weight: 600; color: var(--text-primary); }
+    .talk-date { font-size: 14px; color: var(--text-secondary); }
+    .talk-content { font-size: 14px; color: var(--text-primary); line-height: 1.6; margin-bottom: 8px; }
+    .talk-followup { font-size: 13px; color: var(--text-secondary); font-style: italic; }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-left">
-      <button class="back-btn" onclick="history.back()">
-        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-      </button>
-      <div class="header-title">谈话记录</div>
-    </div>
-    <button class="add-btn" onclick="addTalk()">
-      <i data-lucide="plus" class="w-5 h-5"></i>
-    </button>
-  </header>
-
-  <div class="content">
-    <div class="talk-card">
-      <div class="talk-header">
-        <div class="talk-avatar" style="background: linear-gradient(135deg, var(--success) 0%, #66BB6A 100%);">张</div>
-        <div class="talk-info">
-          <div class="talk-name">张小明</div>
-          <div class="talk-time">今天 12:30 · 办公室</div>
+  <div class="app">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="header-left">
+          <button class="menu-btn" onclick="toggleSidebar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <h1 class="app-title">谈话记录</h1>
         </div>
-        <span class="talk-type type-encourage">鼓励</span>
-      </div>
-      <div class="talk-desc">
-        表扬张小明本次月考取得全班第一名的优异成绩，鼓励他继续保持，并帮助其他同学共同进步。
-      </div>
-      <div class="talk-result">
-        <div class="result-title">谈话效果</div>
-        <div class="result-text">学生表示会继续努力，愿意担任学习小组长帮助同学。</div>
-      </div>
-      <div class="talk-footer">
-        <span style="font-size: 12px; color: var(--text-muted);">已完成</span>
-        <span class="talk-action">编辑 ›</span>
-      </div>
-    </div>
-
-    <div class="talk-card">
-      <div class="talk-header">
-        <div class="talk-avatar" style="background: linear-gradient(135deg, var(--error) 0%, #EF5350 100%);">刘</div>
-        <div class="talk-info">
-          <div class="talk-name">刘洋</div>
-          <div class="talk-time">昨天 16:00 · 教室</div>
+        <div class="header-right">
+          <button class="header-btn" onclick="addTalk()">+ 新增</button>
         </div>
-        <span class="talk-type type-discipline">纪律</span>
       </div>
-      <div class="talk-desc">
-        针对刘洋连续迟到问题进行沟通，了解原因是早上起床困难。与家长沟通后制定作息调整计划。
-      </div>
-      <div class="talk-result">
-        <div class="result-title">谈话效果</div>
-        <div class="result-text">学生认识到问题，承诺调整作息。已通知家长配合监督。</div>
-      </div>
-      <div class="talk-footer">
-        <span style="font-size: 12px; color: var(--text-muted);">待跟进</span>
-        <span class="talk-action">编辑 ›</span>
-      </div>
-    </div>
+    </header>
 
-    <div class="talk-card">
-      <div class="talk-header">
-        <div class="talk-avatar" style="background: linear-gradient(135deg, var(--info) 0%, #42A5F5 100%);">张</div>
-        <div class="talk-info">
-          <div class="talk-name">张乐（新转入）</div>
-          <div class="talk-time">2026-05-12 · 办公室</div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>班级助手</h2>
+        <p class="subtitle">绿茵校园·智慧班级</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-title">主功能</div>
+          <a href="index.html" class="nav-item"><span class="nav-icon"></span><span>主页信息</span></a>
+          <a href="students.html" class="nav-item"><span class="nav-icon">👨‍🎓</span><span>学生管理</span></a>
+          <a href="grades.html" class="nav-item"><span class="nav-icon">📈</span><span>成绩分析</span></a>
+          <a href="discipline.html" class="nav-item"><span class="nav-icon">⚖️</span><span>违纪统计</span></a>
+          <a href="homework.html" class="nav-item"><span class="nav-icon">📚</span><span>作业管理</span></a>
+          <a href="leave.html" class="nav-item"><span class="nav-icon">🗓️</span><span>请销假</span></a>
         </div>
-        <span class="talk-type type-care">关怀</span>
+        <div class="nav-section">
+          <div class="nav-title">教学记录</div>
+          <a href="worklog.html" class="nav-item"><span class="nav-icon">📝</span><span>工作留痕</span></a>
+          <a href="talks.html" class="nav-item active"><span class="nav-icon">💬</span><span>谈话记录</span></a>
+          <a href="seating.html" class="nav-item"><span class="nav-icon">🪑</span><span>排座位</span></a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-title">AI 助手</div>
+          <a href="ai-prepare.html" class="nav-item"><span class="nav-icon">🤖</span><span>智能备课</span></a>
+          <a href="ai-analysis.html" class="nav-item"><span class="nav-icon">📊</span><span>学情分析</span></a>
+          <a href="ai-comment.html" class="nav-item"><span class="nav-icon">✍️</span><span>评语生成</span></a>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="teacher-info">
+          <div class="teacher-avatar" id="teacherAvatar">李</div>
+          <div>
+            <div class="teacher-name" id="teacherName">李老师</div>
+            <div class="teacher-role" id="teacherRole">班主任</div>
+          </div>
+        </div>
       </div>
-      <div class="talk-desc">
-        与新转入学生张乐进行入学谈话，了解其学习情况和适应状态。介绍班级规章制度，安排同桌李华帮助适应。
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <main class="main-content">
+      <div class="talk-list" id="talkList">
+        <div class="empty-state">暂无谈话记录</div>
       </div>
-      <div class="talk-result">
-        <div class="result-title">谈话效果</div>
-        <div class="result-text">学生情绪稳定，表示会尽快适应新环境。已安排帮扶对子。</div>
-      </div>
-      <div class="talk-footer">
-        <span style="font-size: 12px; color: var(--text-muted);">已完成</span>
-        <span class="talk-action">编辑 ›</span>
-      </div>
-    </div>
+    </main>
   </div>
 
+  <script src="js/data.js"></script>
   <script>
-    lucide.createIcons();
-    function addTalk() { alert('添加谈话记录功能'); }
+    if (!classData.className || !classData.teacherName) {
+      window.location.href = 'setup.html';
+    }
+
+    function updatePage() {
+      document.getElementById('teacherName').textContent = (classData.teacherName || '老师') + '老师';
+      document.getElementById('teacherRole').textContent = classData.className || '班主任';
+      document.getElementById('teacherAvatar').textContent = (classData.teacherName || '老')[0];
+      renderTalks();
+    }
+
+    function renderTalks() {
+      const list = document.getElementById('talkList');
+      if (classData.talks.length === 0) {
+        list.innerHTML = '<div class="empty-state">暂无谈话记录</div>';
+        return;
+      }
+      list.innerHTML = classData.talks.map(t => {
+        const student = classData.students.find(s => s.id === t.studentId);
+        return `
+          <div class="talk-item">
+            <div class="talk-header">
+              <div class="talk-student">${student ? student.name : '未知学生'}</div>
+              <div class="talk-date">${t.date}</div>
+            </div>
+            <div class="talk-content">${t.content}</div>
+            ${t.followup ? `<div class="talk-followup">后续：${t.followup}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addTalk() {
+      if (classData.students.length === 0) {
+        alert('请先添加学生');
+        return;
+      }
+      const studentId = parseInt(prompt('学生 ID（查看学生管理页面获取）：'));
+      const student = classData.students.find(s => s.id === studentId);
+      if (!student) {
+        alert('学生不存在');
+        return;
+      }
+      const content = prompt('谈话内容：');
+      if (!content) return;
+      const followup = prompt('后续跟进（可选）：', '');
+      
+      classData.talks.push({
+        id: Date.now(),
+        studentId,
+        content,
+        followup,
+        date: new Date().toISOString().split('T')[0]
+      });
+      saveData();
+      renderTalks();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebarOverlay').classList.toggle('active');
+    }
+
+    updatePage();
   </script>
 </body>
 </html>
